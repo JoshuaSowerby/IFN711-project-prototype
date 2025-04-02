@@ -19,11 +19,19 @@ const authSchema = new mongoose.Schema({
             if(!validator.isEmail(value)){
                 throw new Error({error:"Invalid Email Address"})
             }
-        } },
+        }
+    },
+    // both the validator error messages are broken
     password: {
         type: String,
         required: true,
-        minlength: 10 },//use propper password requirements with validator.isStrongPassword 
+        //"minLength: 8, minLowercase: 1, minUppercase:1, minNumbers:1, minSymbols:1"
+        validate: value => {
+            if(!validator.isStrongPassword(value)){
+                throw new Error({error:"weak"});
+            }
+        }
+    },
 
     tokens: [{ token: { type: String, required: true } }]
 });

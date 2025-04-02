@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const scoreHistoryRoutes = require("./routes/scoreHistoryRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const exerciseHistoryRoutes = require("./routes/exerciseHistoryRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/scoreHistory", scoreHistoryRoutes);
 app.use("/api/exerciseHistory", exerciseHistoryRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/user", userRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

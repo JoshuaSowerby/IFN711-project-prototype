@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const scoreHistorySchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", required: true },///fix this in the router section
+        ref: "Auth", required: true },///fix this in the router section
     score: [{
         score: {
             type: Number,

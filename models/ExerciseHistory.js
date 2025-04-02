@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const exerciseHistorySchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", required: true },///fix this in the router section
+        ref: "Auth", required: true },///fix this in the router section
     exercises: [{
         exercise: {
             type: String, // or this may reference another table with all exercises

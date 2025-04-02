@@ -15,10 +15,11 @@ const authSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        validate: value=> {
-            if(!validator.isEmail(value)){
-                throw new Error({error:"Invalid Email Address"})
-            }
+        validate: {
+            validator: function (value) {
+                return validator.isEmail(value);
+            },
+            message: "Invalid Email Address"
         }
     },
     // both the validator error messages are broken
@@ -26,10 +27,11 @@ const authSchema = new mongoose.Schema({
         type: String,
         required: true,
         //"minLength: 8, minLowercase: 1, minUppercase:1, minNumbers:1, minSymbols:1"
-        validate: value => {
-            if(!validator.isStrongPassword(value)){
-                throw new Error({error:"weak"});
-            }
+        validate: {
+            validator: function (value) {
+                return validator.isStrongPassword(value);
+            },
+            message: "weak password"
         }
     },
 

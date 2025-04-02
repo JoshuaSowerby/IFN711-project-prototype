@@ -1,5 +1,0 @@
-there are Date.now() which shouldn't do that, they should use user submitted date, and default if not avalible
-
-
-
-every x time decay score

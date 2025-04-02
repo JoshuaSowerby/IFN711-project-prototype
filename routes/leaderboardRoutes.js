@@ -1,0 +1,1 @@
+// THe idea of this is that it only stores the most recent scoreHistory value, I dont know if it should do that

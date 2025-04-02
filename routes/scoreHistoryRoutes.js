@@ -17,12 +17,13 @@ router.get('/getScoreHistory', async (req,res)=>{//this should use authenticator
 });
 
 // update score
-router.post('/updateScore', async (req,res)=>{//again use authentication
+// why does each score in the array have its own id?
+router.post('/updateScore', async (req,res)=>{//again use authentication, aslo should likely be updateHistory
     try {
         await ScoreHistory.findOneAndUpdate(
             {userId: req.body.userId},//update to req.user.userId when auth in place
             //{$inc:{score: req.body.score}, timestamp:Date.now()},//increment score by last sent
-            {$push:{score:{score: req.body.score, timestamp:Date.now()}}},
+            {$push:{score:{score: req.body.score}}},
             {upsert: true, new: true}//create if doesnt exist
         )
         res.status(401).send("updated");

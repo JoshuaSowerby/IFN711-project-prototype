@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000;
 const authRoutes = require("./routes/authRoutes");
 const scoreHistoryRoutes = require("./routes/scoreHistoryRoutes");
 const leaderboardRoutes = require("./routes/leaderboardRoutes");
+const exerciseHistoryRoutes = require("./routes/exerciseHistoryRoutes");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/scoreHistory", scoreHistoryRoutes);
+app.use("/api/exerciseHistory", exerciseHistoryRoutes);
 // app.use("/api/leaderboard", leaderboardRoutes);
 
 // Connect to MongoDB

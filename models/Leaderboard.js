@@ -7,4 +7,4 @@ const leaderboardSchema = new mongoose.Schema({
         required: true}
 });
 
-module.exports = mongoose.model("Score", leaderboardSchema);
+module.exports = mongoose.model("Leaderboard", leaderboardSchema);

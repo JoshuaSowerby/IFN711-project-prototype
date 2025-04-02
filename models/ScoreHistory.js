@@ -14,4 +14,4 @@ const scoreHistorySchema = new mongoose.Schema({
         }]
 });
 
-module.exports = mongoose.model("Score", scoreHistorySchema);
+module.exports = mongoose.model("ScoreHistory", scoreHistorySchema);

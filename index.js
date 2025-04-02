@@ -19,7 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/scoreHistory", scoreHistoryRoutes);
 app.use("/api/exerciseHistory", exerciseHistoryRoutes);
-// app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

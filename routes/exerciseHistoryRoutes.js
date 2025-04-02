@@ -10,7 +10,7 @@ router.get('/getExerciseHistory', async (req,res)=>{//this should use authentica
         if (!score){
             return res.status(404).send({ message: "No score found" });
         }
-        res.status(401).send("1");//{ score: score.score }
+        res.status(201).send("1");//{ score: score.score }
     }catch(error){
         res.status(400).send({error});
     };
@@ -29,7 +29,7 @@ router.post('/updateExerciseHistory', async (req,res)=>{//again use authenticati
                     timestamp: req.body.timestamp}}},
             {upsert: true, new: true}//create if doesnt exist
         )
-        res.status(401).send("updated");
+        res.status(201).send("updated");
     } catch (error) {
         res.status(400).send({error});
     };

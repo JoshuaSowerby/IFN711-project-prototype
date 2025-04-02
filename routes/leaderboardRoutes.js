@@ -7,11 +7,13 @@ const Leaderboard = require("../models/Leaderboard");
 
 
 // should allow for queries
-router.get('/getLeaderboard', async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/', async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
-        const leaderboard = await Leaderboard
-        res.status(200).send(Leaderboard);//shouldnt send with id, should just be username, not implemented
+        const leaderboard = await Leaderboard.find()
+        res.status(200).send(leaderboard);//shouldnt send with id, should just be username, not implemented
     }catch(error){
         res.status(400).send({error});
     };
 });
+
+module.exports = router;

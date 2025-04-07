@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const ExerciseHistory = require("../models/ExerciseHistory");
-
+const authMiddleware = require("../middleware/authMiddleware");
 
 // should allow for queries
 router.get('/getExerciseHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
-        const score = await ExerciseHistory.findOne({ userId: req.body.userId });//change to req.user._id once auth in place
+        const score = await ExerciseHistory.findOne({ userId: req.userId });//change to req.user._id once auth in place
         if (!score){
             return res.status(404).send({ message: "No score found" });
         }
@@ -21,7 +21,7 @@ router.get('/getExerciseHistory',authMiddleware, async (req,res)=>{//this should
 router.post('/updateExerciseHistory',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
     try {
         await ExerciseHistory.findOneAndUpdate(
-            {userId: req.body.userId},//update to req.user.userId when auth in place
+            {userId: req.userId},//update to req.user.userId when auth in place
             {$push:{
                 exercises:{
                     exercise: req.body.exercise,

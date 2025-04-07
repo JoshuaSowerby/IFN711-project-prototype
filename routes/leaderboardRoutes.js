@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 const Leaderboard = require("../models/Leaderboard");
 const mongoose = require("mongoose");
+const authMiddleware = require("../middleware/authMiddleware");
 
 
 // should allow for queries
@@ -21,6 +22,7 @@ router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator
         if (req.query.greaterThanOrEqual){
             query.score = { ...query.score, $gte: Number(req.query.greaterThanOrEqual)};
         }
+        //outdated, fix !!!
         if (req.query.id){
             if(!mongoose.Types.ObjectId.isValid(req.query.id)){
                 return res.status(400).json({error: 'Invalid id'});

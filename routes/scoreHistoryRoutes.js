@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ScoreHistory = require("../models/ScoreHistory");
 const Leaderboard = require("../models/Leaderboard");
+const authMiddleware = require("../middleware/authMiddleware");
 
 /*
 {userId: req.body.userId} //update to req.user.userId when auth in place
@@ -9,7 +10,7 @@ const Leaderboard = require("../models/Leaderboard");
 
 router.get('/getScoreHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
-        const score = await ScoreHistory.findOne({ userId: req.body.userId });//change to req.user._id once auth in place
+        const score = await ScoreHistory.findOne({ userId: req.userId });//change to req.user._id once auth in place
         if (!score){
             return res.status(404).send({ message: "No score found" });
         }
@@ -25,13 +26,13 @@ router.post('/updateScore', async (req,res)=>{//again use authentication, aslo s
     try {
         //findOneAndUpdate(filter, update, optionss)
         await ScoreHistory.findOneAndUpdate(
-            {userId: req.body.userId},//update to req.user.userId when auth in place
+            {userId: req.userId},//update to req.user.userId when auth in place
             //{$inc:{score: req.body.score}, timestamp:Date.now()},//increment score by last sent
             {$push:{score:{score: req.body.score}}},
             {upsert: true, new: true}//create if doesnt exist
         )
         await Leaderboard.findOneAndUpdate(
-            {userId: req.body.userId},
+            {userId: req.userId},
             {score: req.body.score},
             {upsert:true, new: true}
 

@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-// add this in later, It will be annoying todo as you will need to update everything isn routers that needs it
-const authMiddleware = async (requestAnimationFrame, res, next) =>{
+// to add this in change the routes to be like router.get('/protectedRoute', authMiddleware, async (req, res) => {
+const authMiddleware = async (req, res, next) =>{
     try {
 
-        const authHeader = requestAnimationFrame.header("Authorization");
+        const authHeader = req.header("Authorization");
         
         //check token exists
         if (!authHeader || !authHeader.startsWith('Bearer ')){
@@ -13,11 +13,12 @@ const authMiddleware = async (requestAnimationFrame, res, next) =>{
         //check if token valid
         const token = authHeader.split(' ')[1];
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-        req.userId = decodedToken.userId
+        
+        req.userId = decodedToken.userId;
+        next();
         // now when you want id, use req.userId
     } catch (error) {
         res.status(401).send({error:"Invalid token"})
     }
 }
-export default authMiddleware;
+module.exports=authMiddleware;

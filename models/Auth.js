@@ -5,12 +5,6 @@ const jwt = require("jsonwebtoken");
 
 //userId should be replaced with _id
 const authSchema = new mongoose.Schema({
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,// this may be pointless as it looks like MongoDB already gives us an id using _id
-        index: true,
-        required: true,
-        auto: true,
-    },
     email: {
         type: String,
         required: true,
@@ -67,7 +61,7 @@ authSchema.statics.findWithLogin = async (email, password) => {
 // should this be stored in userSchema or locally?
 
 authSchema.methods.generateJWT = async function () { // does this need to be async?
-    const token = jwt.sign({ userId: this.userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ userId: this._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     return token;
 };
 

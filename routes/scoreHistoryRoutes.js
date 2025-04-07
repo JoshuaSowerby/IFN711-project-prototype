@@ -7,7 +7,7 @@ const Leaderboard = require("../models/Leaderboard");
 {userId: req.body.userId} //update to req.user.userId when auth in place
 */
 
-router.get('/getScoreHistory', async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/getScoreHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
         const score = await ScoreHistory.findOne({ userId: req.body.userId });//change to req.user._id once auth in place
         if (!score){

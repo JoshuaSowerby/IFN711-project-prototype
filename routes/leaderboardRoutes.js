@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 // should allow for queries
 // remove user id from return
 // get user ID using JWT
-router.get('/', async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
         
         let query={};//query object

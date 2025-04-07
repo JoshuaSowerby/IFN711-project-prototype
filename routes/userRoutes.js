@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 
-router.post('/updateUsername', async (req,res)=>{//again use authentication, aslo should likely be updateHistory
+router.post('/updateUsername',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
     try {
         //findOneAndUpdate(filter, update, optionss)
         await User.findOneAndUpdate(

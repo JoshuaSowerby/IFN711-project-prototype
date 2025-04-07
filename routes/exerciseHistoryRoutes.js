@@ -4,7 +4,7 @@ const ExerciseHistory = require("../models/ExerciseHistory");
 
 
 // should allow for queries
-router.get('/getExerciseHistory', async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/getExerciseHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
         const score = await ExerciseHistory.findOne({ userId: req.body.userId });//change to req.user._id once auth in place
         if (!score){
@@ -18,7 +18,7 @@ router.get('/getExerciseHistory', async (req,res)=>{//this should use authentica
 
 // update history
 // why does each score in the array have its own id?
-router.post('/updateExerciseHistory', async (req,res)=>{//again use authentication, aslo should likely be updateHistory
+router.post('/updateExerciseHistory',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
     try {
         await ExerciseHistory.findOneAndUpdate(
             {userId: req.body.userId},//update to req.user.userId when auth in place

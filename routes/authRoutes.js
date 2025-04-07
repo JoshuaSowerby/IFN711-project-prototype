@@ -24,10 +24,9 @@ router.post('/loginUser', async (req,res)=>{
         if(!user){
             return res.status(401).send({error: 'invalid login'});
         };
-        //const token = await user.generateJWT();// the JWT should be fixed
         res.status(200).send({user});//shouldnt I send the JWT instead
     } catch (error) {
-        res.status(400).send({error});
+        res.status(400).send({error: error.message});
     };
 });
 

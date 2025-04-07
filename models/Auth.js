@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const validator = require('validator');
 const jwt = require("jsonwebtoken");
 
+//userId should be replaced with _id
 const authSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,// this may be pointless as it looks like MongoDB already gives us an id using _id
@@ -34,8 +35,6 @@ const authSchema = new mongoose.Schema({
             message: "weak password"
         }
     },
-
-    tokens: [{ token: { type: String, required: true } }]
 });
 
 // Hash password before saving
@@ -45,29 +44,33 @@ authSchema.pre("save", async function (next) {// think this cant be arrow becaus
     next();
 });
 
+
+//why is this here? wouldnt it be easier if it was with routes?
 // login
 authSchema.statics.findWithLogin = async (email, password) => {
     const user = await Auth.findOne({email});
     if(!user){
-        throw new Error({error: "invalid login"});
+        throw new Error("invalid login");
     }
     const doesPasswordMatch = await bcrypt.compare(password, user.password)
     if(!doesPasswordMatch){
-        throw new Error({error: "invalid login"});
+        throw new Error("invalid login");
     }
-    return user;
+    //Is this needed at register?
+    const token = await user.generateJWT();
+
+    return token;
 }
 
 // OAuth was recommended as being simpler
 // Generate JWT, json web token
 // should this be stored in userSchema or locally?
-authSchema.methods.generateJWT = async function () {
+
+authSchema.methods.generateJWT = async function () { // does this need to be async?
     const token = jwt.sign({ userId: this.userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    this.tokens.push({ token });
-    await this.save();
     return token;
-  };
+};
 
-  const Auth = mongoose.model('Auth', authSchema);
+const Auth = mongoose.model('Auth', authSchema);
 
-  module.exports = Auth;
+module.exports = Auth;

@@ -7,6 +7,7 @@ const Leaderboard = require("../models/Leaderboard");
 const mongoose = require("mongoose");
 const authMiddleware = require("../middleware/authMiddleware");
 
+const excludedFields={userId:0,_id:0,__v:0};
 
 // should allow for queries
 // remove user id from return
@@ -31,7 +32,7 @@ router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator
         }
         //limit
         // surrounding
-        const leaderboard = await Leaderboard.find(query).sort({score:1})
+        const leaderboard = await Leaderboard.find(query).sort({score:1}).select(excludedFields);
         res.status(200).send(leaderboard);//shouldnt send with id, should just be username, not implemented
     }catch(error){
         res.status(400).send({error});

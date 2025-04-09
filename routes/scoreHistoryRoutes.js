@@ -8,21 +8,25 @@ const authMiddleware = require("../middleware/authMiddleware");
 {userId: req.body.userId} //update to req.user.userId when auth in place
 */
 
-router.get('/getScoreHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+const excludedFields={userId:0,_id:0,__v:0};//.select(excludedFields)
+
+
+//add queries
+//should we remove the _id from all scores?
+router.get('/',authMiddleware, async (req,res)=>{
     try{
-        const score = await ScoreHistory.findOne({ userId: req.userId });//change to req.user._id once auth in place
+        const score = await ScoreHistory.findOne({ userId: req.userId });
         if (!score){
             return res.status(404).send({ message: "No score found" });
         }
-        res.status(201).send("1");//{ score: score.score }
+        res.status(201).send(score).select(excludedFields);//{ score: score.score }
     }catch(error){
         res.status(400).send({error});
     };
 });
 
 // update score
-// why does each score in the array have its own id?
-router.post('/updateScore', async (req,res)=>{//again use authentication, aslo should likely be updateHistory
+router.post('/updateScore',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
     try {
         //findOneAndUpdate(filter, update, optionss)
         await ScoreHistory.findOneAndUpdate(

@@ -3,14 +3,18 @@ const router = express.Router();
 const ExerciseHistory = require("../models/ExerciseHistory");
 const authMiddleware = require("../middleware/authMiddleware");
 
+
+const excludedFields={userId:0,_id:0,__v:0};
+// can merge through x = {...remove, ...otherObj};
+
 // should allow for queries
-router.get('/getExerciseHistory',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
     try{
-        const score = await ExerciseHistory.findOne({ userId: req.userId });//change to req.user._id once auth in place
+        const score = await ExerciseHistory.findOne({ userId: req.userId }).select(excludedFields);// should we replace {userId:0,_id:0,__v:0} with an imported variable?
         if (!score){
             return res.status(404).send({ message: "No score found" });
         }
-        res.status(201).send("1");//{ score: score.score }
+        res.status(201).send(score);//{ score: score.score }
     }catch(error){
         res.status(400).send({error});
     };

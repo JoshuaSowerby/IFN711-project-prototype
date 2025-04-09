@@ -1,10 +1,10 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const Auth = require("../models/Auth");
 const router = express.Router();
 
 // registerUser
 // should add something for email confirmation
+// this doesnt generate jwt
 router.post('/registerUser', async (req,res)=>{
     // create user
     try{

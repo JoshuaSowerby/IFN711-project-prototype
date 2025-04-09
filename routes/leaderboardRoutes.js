@@ -21,6 +21,7 @@ the username field will either be found from the "users" table or be in the "lea
 router.get('/',authMiddleware, async (req,res)=>{
     try{
         
+        //queries no longer used
         let query={};//query object
         //greater than
         if (req.query.lessThanOrEqual){
@@ -64,12 +65,27 @@ router.get('/',authMiddleware, async (req,res)=>{
                 }
             }
           ]);
-
-          
-          //const userIndex = leaderboard.findIndex( (entry) => {entry.userId.toString() === req.userId.toString());
           const userIndex = leaderboard.findIndex(item => item.userId.toString()===req.userId);
-
+          
           const noIdLeaderboard = leaderboard.map(({ userId, ...allItems }) => allItems);
+          /*limit should look like this, but + and -5 should depend on length of leader board and position of userIndex
+          const limit = req.query.limit;
+          
+          firstIndex=userIndex-limit;
+          lastIndex=userIndex+limit;
+          length=(leaderboard.length-1);
+
+          if (lastIndex>length){// if lastIndex is greater than length of list, subtract the remainder to firstIndex, if firstIndex becomes -ve, set to 0
+            firstIndex-=lastIndex-length;
+            //lastIndex=length;//doesnt matter as slice works for greater than length
+          };
+          if (firstIndex<=0){//if firstIndex is negative or 0 add the leftover limit to the last
+            lastIndex-=(limit+firstIndex);//firstIndex is 0 or -ve
+            firstIndex=0;//set to 0 to avoid errors
+          };
+          
+          return [...leaderboard.slice(firstIndex,userIndex),...leaderboard.slice(userIndex,lastIndex)]
+          */
 
         //const leaderboard = await Leaderboard.find(query).sort({score:1}).select(excludedFields);
         res.status(200).send({leaderboard:noIdLeaderboard,userIndex});//shouldnt send with id, should just be username, not implemented

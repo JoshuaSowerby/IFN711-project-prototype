@@ -8,7 +8,7 @@ const excludedFields={userId:0,_id:0,__v:0};
 // can merge through x = {...remove, ...otherObj};
 
 // should allow for queries
-router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/',authMiddleware, async (req,res)=>{
     try{
         const score = await ExerciseHistory.findOne({ userId: req.userId }).select(excludedFields);// should we replace {userId:0,_id:0,__v:0} with an imported variable?
         if (!score){
@@ -22,10 +22,10 @@ router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator
 
 // update history
 // why does each score in the array have its own id?
-router.post('/updateExerciseHistory',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
+router.post('/updateExerciseHistory',authMiddleware, async (req,res)=>{
     try {
         await ExerciseHistory.findOneAndUpdate(
-            {userId: req.userId},//update to req.user.userId when auth in place
+            {userId: req.userId},
             {$push:{
                 exercises:{
                     exercise: req.body.exercise,

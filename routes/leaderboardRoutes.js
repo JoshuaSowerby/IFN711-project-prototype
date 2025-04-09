@@ -12,7 +12,7 @@ const excludedFields={userId:0,_id:0,__v:0};
 // should allow for queries
 // remove user id from return
 // get user ID using JWT
-router.get('/',authMiddleware, async (req,res)=>{//this should use authenticator middleware using JWT instead of needing userId
+router.get('/',authMiddleware, async (req,res)=>{
     try{
         
         let query={};//query object

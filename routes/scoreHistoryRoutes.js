@@ -4,9 +4,7 @@ const ScoreHistory = require("../models/ScoreHistory");
 const Leaderboard = require("../models/Leaderboard");
 const authMiddleware = require("../middleware/authMiddleware");
 
-/*
-{userId: req.body.userId} //update to req.user.userId when auth in place
-*/
+
 
 const excludedFields={userId:0,_id:0,__v:0};//.select(excludedFields)
 
@@ -26,11 +24,11 @@ router.get('/',authMiddleware, async (req,res)=>{
 });
 
 // update score
-router.post('/updateScore',authMiddleware, async (req,res)=>{//again use authentication, aslo should likely be updateHistory
+router.post('/updateScore',authMiddleware, async (req,res)=>{
     try {
         //findOneAndUpdate(filter, update, optionss)
         await ScoreHistory.findOneAndUpdate(
-            {userId: req.userId},//update to req.user.userId when auth in place
+            {userId: req.userId},
             //{$inc:{score: req.body.score}, timestamp:Date.now()},//increment score by last sent
             {$push:{score:{score: req.body.score}}},
             {upsert: true, new: true}//create if doesnt exist

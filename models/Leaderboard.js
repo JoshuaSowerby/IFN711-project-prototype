@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const leaderboardSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Auth", required: true },///fix this in the router section
-    userName:{
+        ref: "User", required: true },///fix this in the router section
+    username:{//unused at the moment, see scoreHistoryRoutes for more info
         type: String,
         ref: "User"
     },

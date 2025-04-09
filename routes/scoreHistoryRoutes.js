@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const ScoreHistory = require("../models/ScoreHistory");
 const Leaderboard = require("../models/Leaderboard");
+//const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 
 
@@ -33,9 +34,16 @@ router.post('/updateScore',authMiddleware, async (req,res)=>{
             {$push:{score:{score: req.body.score}}},
             {upsert: true, new: true}//create if doesnt exist
         )
+
+        // update leaderboard
+        // 2 options, either find username based off userId, or have them send it. for now we will go with the former, but the latter may be more efficient
+        //const user=await User.findOne({userId:req.userId});
+        // dont add username to leaderboard, find it whenever we get scoreboard, so changes in username are always accounted for
+        // that may be a bad idea, adding to scoreboard is less involved
         await Leaderboard.findOneAndUpdate(
             {userId: req.userId},
             {score: req.body.score},
+            //{score: req.body.score, username:user.username},
             {upsert:true, new: true}
 
         )

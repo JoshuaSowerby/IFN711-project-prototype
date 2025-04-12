@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import GyroTest from './gyro';
+import SimulatedSensor from './simulated';
 
 
 const average = array => {
@@ -11,9 +12,11 @@ const average = array => {
   }
 }
 
+const workoutDuration= 10;
+
 const ExerciseScreen = () => {
   const [isWorkoutActive, setIsWorkoutActive] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(3); // Workout duration in seconds
+  const [timeRemaining, setTimeRemaining] = useState(workoutDuration); // Workout duration in seconds
   const [sensorData, setSensorData] = useState([]); // Workout duration in seconds
 
   useEffect(() => {
@@ -37,7 +40,7 @@ const ExerciseScreen = () => {
 
   const startWorkout = () => {
     setIsWorkoutActive(true);
-    setTimeRemaining(3); // Reset workout duration
+    setTimeRemaining(workoutDuration); // Reset workout duration
   };
 
 const handleSensorData = (data) => {
@@ -52,7 +55,7 @@ const handleSensorData = (data) => {
           <View style={styles.container}>
             <Text style={styles.text}>Workout in progress...</Text>
           </View>
-          <GyroTest onSensorData={handleSensorData}/>
+          <SimulatedSensor onSensorData={handleSensorData}/>
           <View style={styles.container}>
             <Text style={styles.timer}>{timeRemaining} seconds remaining</Text>
             {sensorData && (

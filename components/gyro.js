@@ -19,12 +19,24 @@ const GyroTest = ({ onSensorData }) =>{
             }));
             //
             setHistory(prevHistory => [...prevHistory, magnitude(controlledDotPosition)]);
-            onSensorData && onSensorData ({
-                history: history,
-                position: controlledDotPosition,
-                magnitude: magnitude(controlledDotPosition),
-                ngle: angle(controlledDotPosition),
-            })
+            
+            // onSensorData && onSensorData ({// if onSensorData exists, do this. Why though, we define it in the GyroTest arro func so it should always exist...
+            //     history: history,
+            //     position: controlledDotPosition,
+            //     magnitude: magnitude(controlledDotPosition),
+            //     ngle: angle(controlledDotPosition),
+            // })
+
+            //I find this to be more readable than onSensorData && onSensorData. But again shouldn't it always exist? better safe than sorry I guess.
+            if (onSensorData){
+                onSensorData({//this is the prop that we use to give data to the parent
+                    history: history,
+                    position: controlledDotPosition,
+                    magnitude: magnitude(controlledDotPosition),
+                    angle: angle(controlledDotPosition),
+    
+                });
+            };
         });
         return () =>{
             subscriptions?.remove();

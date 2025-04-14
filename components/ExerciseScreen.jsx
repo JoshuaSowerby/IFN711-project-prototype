@@ -4,13 +4,27 @@ import GyroTest from './gyro';
 import SimulatedSensor from './simulated';
 
 
+const balance = array => {
+  try {
+    leftBack=array.map(item=>item.leftBack);
+    rightBack=array.map(item=>item.rightBack);
+    middleBack=array.map(item=>item.middleBack);//dont know what to do with this yet
+    LRbalance=array.map(item=>item.rightBack-item.leftBack);
+    LRbalance=LRbalance.filter( value => Number(value) );//remove non numeric
+    return average(LRbalance);
+  } catch (error) {
+    return '';
+  }
+  
+};
+
 const average = array => {
   try {
     return array.reduce((a, b) => a + b) / array.length;
   } catch (error) {
-    return ""
-  }
-}
+    return "";
+  };
+};
 
 const workoutDuration= 10;
 
@@ -50,7 +64,7 @@ const handleSensorData = (data) => {
 
   return (
     <View>
-      {isWorkoutActive ? (
+      {isWorkoutActive ? (//if else
         <>
           <View style={styles.container}>
             <Text style={styles.text}>Workout in progress...</Text>
@@ -58,8 +72,8 @@ const handleSensorData = (data) => {
           <SimulatedSensor onSensorData={handleSensorData}/>
           <View style={styles.container}>
             <Text style={styles.timer}>{timeRemaining} seconds remaining</Text>
-            {sensorData && (
-              <Text>Current:{average(sensorData.history)}</Text>
+            {sensorData && (//if exists
+              <Text>Current:{balance(sensorData.history)}</Text>
             )}
           </View>
         </>
@@ -67,7 +81,7 @@ const handleSensorData = (data) => {
         <>
           <Text style={styles.text}>Workout Complete!</Text>
           {sensorData && (
-            <Text>You scored:{average(sensorData.history)}</Text>
+            <Text>You scored:{balance(sensorData.history)}</Text>
           )}
         </>
       )}

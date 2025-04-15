@@ -7,7 +7,7 @@ const {width, height} = Dimensions.get('window');
 
 
 const SimulatedSensor = ({onSensorData}) =>{
-    const [data,setData] = useState([]);//prev gyroData
+    const [data,setData] = useState([]);//chack that this isnt redundant
     const [currentIndex, setCurrentIndex] = useState(0);
     const [controlledDotPosition, setControlledDotPosition]=useState({leftBack:0, middleBack:0, rightBack:0, leftArm:0, rightArm:0})//useState({x:0,y:0,z:0});//stores position of dot on screen, which is controlled by gyroData
     const [history, setHistory] = useState([0]);

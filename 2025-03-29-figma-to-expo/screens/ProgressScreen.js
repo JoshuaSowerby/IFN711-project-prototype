@@ -2,15 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import common from '../styles/common';
 import { getScoreHistory } from '../db/db';
+import { useFocusEffect } from '@react-navigation/native';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const ProgressScreen = ({ navigation }) => {
   const[history,setHistory]=useState([]);
+
+  //this should be changed to update whenever we look at it.
+  //So we can rerender things on the page without calling this again
+  useFocusEffect(
+    React.useCallback(() => {
+      getScoreHistory().then((result) => {
+        setHistory(result);
+        console.log('Score history updated:', result);
+      });
+    }, [])
+  );
+
+/*apparently this is bad... 
+//this will run whenever the component is rendered which can cause issues
   useEffect( ()=>{
     getScoreHistory().then( (result) => {
       setHistory(result);
       console.log(result);
     } );
-  },[])
+  })
+  */
 
   return (
     <View style={common.container}>

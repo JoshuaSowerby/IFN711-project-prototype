@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ExerciseListScreen from './screens/ExerciseListScreen';
 import { initDB } from './db/db';
 import ExerciseDetailsScreen from './screens/ExerciseDetailsScreen';
+import ExerciseScreen from './screens/ExerciseScreen.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,6 +23,7 @@ function HomeStack() {
       <Stack.Screen name="Difficulty" component={DifficultyScreen}/>
       <Stack.Screen name="ExerciseList" component={ExerciseListScreen}/>
       <Stack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen}/>
+      <Stack.Screen name="Exercise" component={ExerciseScreen}/>
     </Stack.Navigator>
   );
 }

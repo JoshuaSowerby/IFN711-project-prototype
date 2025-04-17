@@ -31,15 +31,34 @@ export default StyleSheet.create({
     color: '#666',
   },
   button: {
-    backgroundColor: '#000',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 20,
+      backgroundColor: '#000',
+      padding: 12,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginVertical: 8,
+  },
+  buttonSecondary: {
+      backgroundColor: '#ddd',
+      padding: 12,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginVertical: 4,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
+      color: '#fff',
+      fontWeight: 'bold',
+  },
+  buttonTextSecondary: {
+      color: '#000',
+      fontWeight: 'bold',
+  },
+  leaderboardLabel: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginTop: 20,
+  },
+  leaderboardItem: {
+      fontSize: 14,
+      marginVertical: 2,
   },
 });

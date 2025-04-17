@@ -31,10 +31,11 @@ const ExerciseListScreen = () => {
         {exercises.length > 0 ? (
           exercises.map( (exercise)=>(
             <TouchableOpacity
-              key={exercise.id}
-              onPress={()=>navigation.navigate('ExerciseDetails', {exercise})}
+            style={common.buttonSecondary}
+            key={exercise.id}
+            onPress={()=>navigation.navigate('ExerciseDetails', {exercise})}
             >
-              <Text>{exercise.name}</Text>
+              <Text style={common.buttonTextSecondary}>{exercise.name}</Text>
             </TouchableOpacity>
           ))
         ) : (

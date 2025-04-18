@@ -28,6 +28,7 @@ EXCEPTIONS
 //This function creates all the tables
 //It also populates with testing data for now
 export async function initDB() {
+  console.log(`PLEASE add proper handling of JWT`)
   const db = await dbPromise;
   //I cannot figure out how to reset tables on physical iOS, so just dropping them here
   
@@ -194,6 +195,8 @@ export async function initDB() {
   // We create all tables here? Is that a good idea?
   //all tables should be created in this one statement? No split out for readability
   // CURRENT_TIMESTAMP, '2025-01-01 00:00:00'
+
+  console.log(`'exercises' table is outdated and needs to be replaced with 'workout'`)
   console.log(`tables are being dropped for testing purposes`)
   await db.execAsync(`DROP TABLE IF EXISTS exercises`);
 
@@ -252,6 +255,58 @@ export async function getExercises(difficulty){
   
   return result
 };
+
+//ALL of these will handle POST and GET requests as well...should these be move to a routes file?
+
+//test these
+/*
+if (!res.ok){
+  throw new Error('error')
+}
+*/
+/*
+req should look like
+
+{url:'/route',
+  body:{
+    x:1,
+    y:2
+    }
+}
+*/
+//api and token should be stored securely somewhere
+const get = async (token, req) =>{
+  try {
+    const url=req.url+api;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers:{
+        'Authorization':`Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return res;
+  } catch (error) {
+    console.error(`GET ${req} FAILED`,error)
+  }
+};
+
+const post = async (token,req) =>{
+  try {
+    const url=req.url+api;
+    const res = await fetch (url, {
+      method: 'POST',
+      headers:{
+        'Authorization':`Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(req.body)
+    });
+    return res;
+  } catch (error) {
+    console.error(`POST ${req} FAILED`,error)
+  }
+}
 
 //should make more generic insert, this is just for scoreHistories
 export async function insertNewScore(data) {

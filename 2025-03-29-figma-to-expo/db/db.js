@@ -64,6 +64,7 @@ export async function initDB() {
     imageUrl TEXT,
     difficulty INTEGER NOT NULL,
     synced INTEGER 0,
+    mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
@@ -117,6 +118,7 @@ export async function initDB() {
     imageUrl TEXT,
     difficulty INTEGER NOT NULL,
     synced INTEGER 0,
+    mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
@@ -143,6 +145,7 @@ export async function initDB() {
     description TEXT,
     muscleGroup TEXT,
     synced INTEGER 0,
+    mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);

@@ -28,51 +28,211 @@ EXCEPTIONS
 //This function creates all the tables
 //It also populates with testing data for now
 export async function initDB() {
-    const db = await dbPromise;
-    //I cannot figure out how to reset tables on physical iOS, so just dropping them here
-    console.log(`tables are being dropped for testing purposes`)
-    await db.execAsync(`DROP TABLE IF EXISTS exercises`);
+  const db = await dbPromise;
+  //I cannot figure out how to reset tables on physical iOS, so just dropping them here
   
-    // We create all tables here? Is that a good idea?
-    //all tables should be created in this one statement? No split out for readability
-    // CURRENT_TIMESTAMP, '2025-01-01 00:00:00'
-    await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS exercises (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      description TEXT NOT NULL,
-      video BLOB NOT NULL,
-      difficulty INTEGER NOT NULL,
-      Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);
-    `);
+  //INDEXING
+  //await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_username ON ${profile}(username);`);
+  //Just an example, we shouldnt index that but we should index score histories
 
-    //CREATE scoreHistory table
-    await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS scoreHistory (
+
+  /*//Profile
+    const profileSchema = new mongoose.Schema({
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      username: { type: String, required: true },
+      bio: { type: String, default: "" },
+      age: { type: Number, default: null },
+      imageUrl: { type: String, default: "" }
+    }, { timestamps: true });
+  */
+
+  //Should only ever have one row
+  //We are only going to sync rows, not individual columns, so if we change imgUrl to a blob we should move it to another table
+  //by default this is not synced and has never been updated
+  //consider using template for table names for easy change
+  let count;
+  let tablename;
+
+  tablename='profile';
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS ${tablename} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    score REAL,
-    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    mongoDB_id TEXT,
-    synced BOOLEAN DEFAULT 0);
-    `);
+    username TEXT,
+    bio TEXT,
+    age INTEGER
+    imageUrl TEXT,
+    difficulty INTEGER NOT NULL,
+    synced INTEGER 0,
+    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+  `);
+  count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  if (count.count ===0){
+    console.log(`${tablename} is empty`);
+    //get from mongoDB
+    //if guest ignore
+  };
+  
+  /*//SensorEvent
+  // don't think this is needed, review later
+  const sensorEventSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    username: String, 
+    exerciseId: String,
+    motion: {
+      left: Number,
+      middle: Number,
+      right: Number,
+      leftStretch: Number,
+      rightStretch: Number
+    },
+    totalMotion: Number,
+    isRep: Boolean,
+    timestamp: { type: Date, default: Date.now }
+  });
+  */
 
-    //if empty populate with dummy data
-    const count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM exercises;`);
-    if (count.count ===0){
-      await db.execAsync(`
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy1', 'easy desc 1', 123, 0, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy2', 'easy desc 2', 123, 0, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy3', 'easy desc 3', 123, 0, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium1', 'medium desc 1', 123, 1, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium2', 'medium desc 2', 123, 1, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium3', 'medium desc 3', 123, 1, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 1', 123, 2, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 2', 123, 2, '2025-01-01 00:00:00');
-      INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 3', 123, 2, '2025-01-01 00:00:00');
-      `);
-      console.log('testing data added to exercises')
-    };
-    console.log()
+  /*//User
+  // I would split non auth fields into profile? maybe not
+  const userSchema = new mongoose.Schema({
+    username: String,
+    email: { type: String, unique: true },
+    password: String,
+    gravityScore: { type: Number, default: 0 },     // score for current session/day
+    bestScore: { type: Number, default: 0 },        // highest score ever achieved
+    streak: { type: Number, default: 0 },           // consecutive days with activity
+    lastActiveDate: { type: Date, default: null },    // track activity date for streak
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }]
+  });
+  */
+  //should only ever have one row
+  ///!!!Install SecureStore for the JWT
+  tablename ='user';
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS ${tablename} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    gravityScore TEXT,
+    bio TEXT,
+    age INTEGER
+    imageUrl TEXT,
+    difficulty INTEGER NOT NULL,
+    synced INTEGER 0,
+    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+  `);
+  count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  if (count.count ===0){
+    console.log(`${tablename} is empty`);
+    //get from mongoDB
+    //if guest ignore
+  };
+
+  /*//Workout
+  const workoutSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true },
+    description: { type: String, default: '' },
+    muscleGroup: { type: String, default: '' }
+  });
+  */
+  tablename ='workout';
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS ${tablename} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    difficulty TEXT,
+    description TEXT,
+    muscleGroup TEXT,
+    synced INTEGER 0,
+    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+  `);
+  count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  if (count.count ===0){
+    console.log(`${tablename} is empty`);
+    //get from mongoDB
+    //if guest ignore
+  };
+
+  /*//WorkoutSession
+  const workoutSessionSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    exerciseId: String,
+    difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' }, 
+    startTime: { type: Date, default: Date.now },
+    endTime: Date,
+    totalReps: { type: Number, default: 0 },
+    totalScore: { type: Number, default: 0 }
+  });
+  */
+  //I don't think this needs to exist. this is processed in app...
+  // tablename ='workoutSession';
+  // await db.execAsync(`
+  //   CREATE TABLE IF NOT EXISTS ${tablename} (
+  //   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  //   name TEXT,
+  //   difficulty TEXT,
+  //   description TEXT,
+  //   muscleGroup TEXT,
+  //   synced INTEGER 0,
+  //   lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+  // `);
+  // count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  // if (count.count ===0){
+  //   console.log(`${tablename} is empty`);
+  //   //get from mongoDB
+  //   //if guest ignore
+  // };
+
+  /*//DIFFERENCES
+    NOT PRESENT
+      scoreHistory, or exerciseHistory
+      leaderboard
+    DIFFERENT
+      I have Auth, which holds login info, their user hs auth+settings and score...
+      we could move some of that to their profile...
+  */
+
+
+  // We create all tables here? Is that a good idea?
+  //all tables should be created in this one statement? No split out for readability
+  // CURRENT_TIMESTAMP, '2025-01-01 00:00:00'
+  console.log(`tables are being dropped for testing purposes`)
+  await db.execAsync(`DROP TABLE IF EXISTS exercises`);
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS exercises (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    video BLOB NOT NULL,
+    difficulty INTEGER NOT NULL,
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);
+  `);
+
+  //CREATE scoreHistory table
+  await db.execAsync(`
+  CREATE TABLE IF NOT EXISTS scoreHistory (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  score REAL,
+  Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  mongoDB_id TEXT,
+  synced INTEGER DEFAULT 0);
+  `);
+
+  //if empty populate with dummy data
+  const scoreHistorycount = await db.getFirstAsync(`SELECT COUNT(*) as count FROM exercises;`);
+  if (scoreHistorycount.count ===0){
+    await db.execAsync(`
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy1', 'easy desc 1', 123, 0, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy2', 'easy desc 2', 123, 0, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy3', 'easy desc 3', 123, 0, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium1', 'medium desc 1', 123, 1, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium2', 'medium desc 2', 123, 1, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium3', 'medium desc 3', 123, 1, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 1', 123, 2, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 2', 123, 2, '2025-01-01 00:00:00');
+    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 3', 123, 2, '2025-01-01 00:00:00');
+    `);
+    console.log('testing data added to exercises')
+  };
 };
 
 //please add comments showing how the output is structured

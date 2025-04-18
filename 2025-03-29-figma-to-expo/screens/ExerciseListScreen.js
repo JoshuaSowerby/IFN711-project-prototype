@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text,  StyleSheet, TouchableOpacity } from 'react-native';
 import common from '../styles/common';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getExercises } from '../db/db';
+import { getExercises } from '../db/exercises';
 
 /*
 Install expo-sqlite

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import SimulatedSensor from './simulated';
-import { logScores, insertNewScore, getLastScore } from '../db/db';
+import { logScores, insertNewScore, getLastScore } from '../db/score';
 
 const scoreFunc = array => {
   try {

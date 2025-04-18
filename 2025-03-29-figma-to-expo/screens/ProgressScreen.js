@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import common from '../styles/common';
-import { getScoreHistory } from '../db/db';
+import { getScoreHistory } from '../db/score';
 import { useFocusEffect } from '@react-navigation/native';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 const ProgressScreen = ({ navigation }) => {
   const[history,setHistory]=useState([]);

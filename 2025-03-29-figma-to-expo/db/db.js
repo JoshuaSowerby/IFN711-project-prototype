@@ -155,7 +155,7 @@ export async function initDB() {
     //if guest ignore
   };
 
-  /*//WorkoutSession
+  /*//WorkoutSession//This is my scoreHistory
   const workoutSessionSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     exerciseId: String,
@@ -166,24 +166,25 @@ export async function initDB() {
     totalScore: { type: Number, default: 0 }
   });
   */
-  //I don't think this needs to exist. this is processed in app...
-  // tablename ='workoutSession';
-  // await db.execAsync(`
-  //   CREATE TABLE IF NOT EXISTS ${tablename} (
-  //   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //   name TEXT,
-  //   difficulty TEXT,
-  //   description TEXT,
-  //   muscleGroup TEXT,
-  //   synced INTEGER 0,
-  //   lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
-  // `);
-  // count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
-  // if (count.count ===0){
-  //   console.log(`${tablename} is empty`);
-  //   //get from mongoDB
-  //   //if guest ignore
-  // };
+  tablename ='workoutSession';
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS ${tablename} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    exerciseId TEXT,
+    difficulty TEXT,
+    startTime DATETIME,
+    endTime DATETIME,
+    totalReps INTEGER,
+    totalScore REAL,
+    synced INTEGER 0,
+    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+  `);
+  count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  if (count.count ===0){
+    console.log(`${tablename} is empty`);
+    //get from mongoDB
+    //if guest ignore
+  };
 
   /*//DIFFERENCES
     NOT PRESENT

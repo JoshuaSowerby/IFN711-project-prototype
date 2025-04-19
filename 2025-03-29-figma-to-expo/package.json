@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
+    "start:dev":"dotenv -e .env.dev.local expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
@@ -15,7 +16,6 @@
     "expo": "~52.0.46",
     "expo-sqlite": "~15.1.4",
     "expo-status-bar": "~2.0.1",
-    "papaparse": "^5.5.2",
     "react": "18.3.1",
     "react-native": "0.76.9",
     "react-native-gesture-handler": "~2.20.2",
@@ -24,7 +24,9 @@
     "react-native-screens": "~4.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "dotenv-cli": "^8.0.0",
+    "papaparse": "^5.5.2"
   },
   "private": true
 }

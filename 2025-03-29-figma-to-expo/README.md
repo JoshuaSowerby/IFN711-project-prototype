@@ -2,4 +2,4 @@
 # How to run
 From 2025-03-29-figma-to-expo run the following:
 npm install
-npx expo start
+npm run start:dev

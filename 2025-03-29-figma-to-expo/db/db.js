@@ -140,9 +140,9 @@ export async function initDB() {
   });
   */
 
-  console.log('DROPPING workout')
-  await db.execAsync(`DROP TABLE IF EXISTS workout;`);
   tablename ='workout';
+  console.log(`DROPPING ${tablename}`)
+  await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tablename} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -160,11 +160,12 @@ export async function initDB() {
     try {
       console.log(`${tablename} is empty`);
       console.log('API subject to change');
+      
       const workoutToAdd = await makeReq('GET','workout/workouts' );
-      console.log(workoutToAdd);
+      // console.log(workoutToAdd);
       await db.execAsync(`BEGIN TRANSACTION`);
       for (const item of workoutToAdd){
-        console.log(item.difficulty);
+        // console.log(item.difficulty);
         await db.runAsync(`
           INSERT INTO workout (
           name,
@@ -207,17 +208,21 @@ export async function initDB() {
     totalScore: { type: Number, default: 0 }
   });
   */
+  
   tablename ='workoutSession';
+  console.log(`DROPPING ${tablename}`)
+  await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tablename} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    exerciseId TEXT,
+    name TEXT,
     difficulty TEXT,
     startTime DATETIME,
     endTime DATETIME,
     totalReps INTEGER,
     totalScore REAL,
     synced INTEGER DEFAULT 0,
+    mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
@@ -241,19 +246,8 @@ export async function initDB() {
   //all tables should be created in this one statement? No split out for readability
   // CURRENT_TIMESTAMP, '2025-01-01 00:00:00'
 
-  console.log(`'exercises' table is outdated and needs to be replaced with 'workout'`)
-  console.log(`tables are being dropped for testing purposes`)
-  await db.execAsync(`DROP TABLE IF EXISTS exercises`);
 
-  await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS exercises (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    video BLOB NOT NULL,
-    difficulty INTEGER NOT NULL,
-    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP);
-  `);
+  //await db.execAsync(`DROP TABLE IF EXISTS exercises`);
 
   //CREATE scoreHistory table
   await db.execAsync(`
@@ -266,21 +260,8 @@ export async function initDB() {
   `);
 
   //if empty populate with dummy data
-  const scoreHistorycount = await db.getFirstAsync(`SELECT COUNT(*) as count FROM exercises;`);
-  if (scoreHistorycount.count ===0){
-    await db.execAsync(`
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy1', 'easy desc 1', 123, 0, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy2', 'easy desc 2', 123, 0, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('easy3', 'easy desc 3', 123, 0, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium1', 'medium desc 1', 123, 1, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium2', 'medium desc 2', 123, 1, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('medium3', 'medium desc 3', 123, 1, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 1', 123, 2, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 2', 123, 2, '2025-01-01 00:00:00');
-    INSERT INTO exercises (name, description, video, difficulty, Timestamp) VALUES ('hard1', 'hard desc 3', 123, 2, '2025-01-01 00:00:00');
-    `);
-    console.log('testing data added to exercises')
-  };
+  //const scoreHistorycount = await db.getFirstAsync(`SELECT COUNT(*) as count FROM exercises;`);
+
 };
 
 

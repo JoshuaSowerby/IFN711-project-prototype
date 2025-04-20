@@ -8,7 +8,7 @@ export async function getWorkouts(difficulty){
     console.log(`PLEASE ADD A CHECK IF FOR THIS INPUT IS VALID!`)
     const db = await dbPromise;
     let selectStatement;
-    let result;
+    //let result;
     
     if (!difficulty){
       selectStatement=`
@@ -19,10 +19,10 @@ export async function getWorkouts(difficulty){
       SELECT * FROM workout WHERE difficulty = ?;
       `;
     }
-    console.log(selectStatement, difficulty);
+    //console.log(selectStatement, difficulty);
     try {
       const result = await db.getAllAsync(selectStatement, difficulty);
-      console.log(`the result:${result}`);
+      //console.log(`the result:${result}`);
       return result;
     } catch (error) {
       console.error('Error querying workout:',error);

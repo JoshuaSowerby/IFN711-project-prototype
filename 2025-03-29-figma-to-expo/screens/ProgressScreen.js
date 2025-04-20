@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList } from 'react-native';
 import common from '../styles/common';
-import { getScoreHistory } from '../db/score';
 import { useFocusEffect } from '@react-navigation/native';
+import { getWorkoutSessionHistory } from '../db/workoutSession';
 
 const ProgressScreen = ({ navigation }) => {
   const[history,setHistory]=useState([]);
@@ -11,7 +11,7 @@ const ProgressScreen = ({ navigation }) => {
   //So we can rerender things on the page without calling this again
   useFocusEffect(
     React.useCallback(() => {
-      getScoreHistory().then((result) => {
+      getWorkoutSessionHistory().then((result) => {
         setHistory(result);
         console.log('Score history updated:', result);
       });
@@ -37,7 +37,7 @@ const ProgressScreen = ({ navigation }) => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
             <Text style={common.leaderboardItem}>
-                {item.id}. score: {item.score}, time: {item.Timestamp}
+                {item.id}. name {item.name} score: {item.totalScore}, time: {item.endTime}
             </Text>
             )}
         />

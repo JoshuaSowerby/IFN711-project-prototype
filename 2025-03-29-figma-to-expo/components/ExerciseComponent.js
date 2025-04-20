@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import SimulatedSensor from './simulated';
-import { logScores, insertNewScore, getLastScore } from '../db/score';
+import { insertNewWorkoutSession, getLastScore } from '../db/workoutSession';
 
 const scoreFunc = array => {
   try {
@@ -28,11 +28,14 @@ const average = array => {
 
 const workoutDuration= 10;
 
-const ExerciseComponent = () => {
+const ExerciseComponent = (exercise) => {
+  // const route = useRoute();
+  // const { exercise } = route.params;// This does work but it would be better to pass as props
   const [isWorkoutActive, setIsWorkoutActive] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(workoutDuration); // Workout duration in seconds
   const [sensorData, setSensorData] = useState({ history: [] }); 
   const [lastScore, setLastScore] = useState([]);
+  const [startTime, setStartTime] = useState('');
   
   useEffect(() => {
     updateLastScore();//Not sure if this needs to be wrpped in async or not... probably doesnt matter if it is late
@@ -42,6 +45,7 @@ const ExerciseComponent = () => {
   useEffect(() => {
     let timer;
     if (isWorkoutActive) {
+      setStartTime( new Date().toISOString().slice(0, 19).replace('T', ' '));//should import this so it is easier to read
       timer = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
@@ -55,14 +59,16 @@ const ExerciseComponent = () => {
     }else{
       if (sensorData.history.length>0){
         const score = scoreFunc(sensorData.history);
-        insertNewScore({score:score}).then((result) => {
+        //
+        // insertNewScore({score:score}).then((result) => {
+        console.log(`hello? ${exercise.name}`);
+        insertNewWorkoutSession({ name:exercise.name, difficulty:exercise.difficulty, startTime:startTime, totalReps:1, totalScore:score }).then((result) => {
           console.log("Score saved:", score);
           console.log("Insert result:", result);
           setLastScore(score);
         }).catch((err) => {
           console.error("DB insert failed:", err);
         });
-        logScores();//remove
       };
     };
 

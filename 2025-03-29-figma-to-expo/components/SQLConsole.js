@@ -54,7 +54,7 @@ export default function SQLConsole(){
     );
 };
 const styles = StyleSheet.create({
-    container: { padding: 16},
+    container: { padding: 16, backgroundColor:'black'},
     title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
     input: {
         borderColor: '#ccc',

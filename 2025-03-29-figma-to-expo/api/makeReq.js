@@ -1,6 +1,6 @@
+
 //api and token should be stored securely somewhere
 export const makeReq = async (method, endpoint, body) =>{
-// const makeReq = async (method, endpoint, body) =>{
   console.log(`PLEASE FIX, use real JWT, 2025-03-29-figma-to-expo/api/makeReq.js`)
   try {
     const token=1;

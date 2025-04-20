@@ -8,9 +8,10 @@ import ExerciseComponent from '../components/ExerciseComponent';
 const ExerciseScreen = () => {
     const route = useRoute();
     const { exercise } = route.params;
+
   return (
     <View style={common.container}>
-        <ExerciseComponent/>
+        <ExerciseComponent {...exercise}/>
     </View>
   );
 };

@@ -7,15 +7,25 @@ export async function getWorkouts(difficulty){
     //should make input an object so we can do better queries
     console.log(`PLEASE ADD A CHECK IF FOR THIS INPUT IS VALID!`)
     const db = await dbPromise;
-    const selectStatement=`
-    SELECT * FROM workout WHERE difficulty = ?;
-    `;
+    let selectStatement;
+    let result;
     
-    const result = await db.getAllAsync(selectStatement, difficulty);
-    console.log(`the result:${result}`);
-    // for (const row of result) {
-    //   console.log(row.description, row.difficulty, row.video);
-    // };
-    //if empty should probably check mongoDB
-    return result
+    if (!difficulty){
+      selectStatement=`
+      SELECT * FROM workout;
+      `;
+    }else{
+      selectStatement=`
+      SELECT * FROM workout WHERE difficulty = ?;
+      `;
+    }
+    console.log(selectStatement, difficulty);
+    try {
+      const result = await db.getAllAsync(selectStatement, difficulty);
+      console.log(`the result:${result}`);
+      return result;
+    } catch (error) {
+      console.error('Error querying workout:',error);
+    }
+    
   };

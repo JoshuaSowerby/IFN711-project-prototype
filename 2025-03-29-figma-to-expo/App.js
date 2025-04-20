@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -33,12 +34,24 @@ function HomeStack() {
 export default function App() {
   //why https://devtrium.com/posts/async-functions-useeffect
   //essentially it will only await if you wrap it even though initDB has awiats in it.
-  useEffect( ()=>{
-    const setup = async () =>{
-      await initDB();
-    };
-    setup();
-  });
+  const [isDbReady, setIsDBReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // init DB
+        await initDB();
+        setIsDBReady(true);
+      } catch (error) {
+        console.error('Error during initDB:', error);
+      }
+    })(); // envoke async
+  }, []);
+
+  if (!isDbReady) {
+    return <Text>Loading...</Text>;
+  }
+  
   return (
     <NavigationContainer>
       <Tab.Navigator

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import common from '../styles/common';
+import { getWorkouts, test } from '../db/workout';
 
 const HomeScreen = ({navigation}) => {
     

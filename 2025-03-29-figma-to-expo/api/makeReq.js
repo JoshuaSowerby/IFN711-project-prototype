@@ -4,8 +4,8 @@ export const makeReq = async (method, endpoint, body) =>{
   console.log(`PLEASE FIX, use real JWT, 2025-03-29-figma-to-expo/api/makeReq.js`)
   try {
     const token=1;
-    const url = process.env.API+endpoint;
-    console.log(url);
+    const url = `${process.env.EXPO_PUBLIC_API}${endpoint}`;
+    console.log(`url: ${url}`);
     const options = {
       method,
       headers: {

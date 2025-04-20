@@ -1,4 +1,6 @@
 import * as SQLite from 'expo-sqlite';
+import { makeReq } from '../api/makeReq';
+import { getWorkouts } from './workout';
 
 export const dbPromise = SQLite.openDatabaseAsync('example.db');
 /*
@@ -24,6 +26,7 @@ MongoDB -> SQLite
 EXCEPTIONS
 ...
 */
+
 
 //This function creates all the tables
 //It also populates with testing data for now
@@ -63,7 +66,7 @@ export async function initDB() {
     age INTEGER
     imageUrl TEXT,
     difficulty INTEGER NOT NULL,
-    synced INTEGER 0,
+    synced INTEGER DEFAULT 0,
     mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
@@ -117,7 +120,7 @@ export async function initDB() {
     age INTEGER
     imageUrl TEXT,
     difficulty INTEGER NOT NULL,
-    synced INTEGER 0,
+    synced INTEGER DEFAULT 0,
     mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
@@ -136,6 +139,9 @@ export async function initDB() {
     muscleGroup: { type: String, default: '' }
   });
   */
+
+  console.log('DROPPING workout')
+  await db.execAsync(`DROP TABLE IF EXISTS workout;`);
   tablename ='workout';
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tablename} (
@@ -144,13 +150,48 @@ export async function initDB() {
     difficulty TEXT,
     description TEXT,
     muscleGroup TEXT,
-    synced INTEGER 0,
+    synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00'
+    );
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
-    console.log(`${tablename} is empty`);
+    try {
+      console.log(`${tablename} is empty`);
+      console.log('API subject to change');
+      const workoutToAdd = await makeReq('GET','workout/workouts' );
+      console.log(workoutToAdd);
+      await db.execAsync(`BEGIN TRANSACTION`);
+      for (const item of workoutToAdd){
+        console.log(item.difficulty);
+        await db.runAsync(`
+          INSERT INTO workout (
+          name,
+          difficulty,
+          description,
+          muscleGroup,
+          synced,
+          mongo_id,
+          lastUpdated) VALUES (?,?,?,?,?,?,?)
+          `,
+          [ item.name,
+            item.difficulty,
+            item.description,
+            item.muscleGroup,
+            1,
+            item._id,
+            new Date().toISOString().slice(0, 19).replace('T', ' ') ]
+        );
+      };
+      await db.execAsync('COMMIT');
+      console.log(`workout insert success`);
+      //await getWorkouts();
+    } catch (error) {
+      await db.execAsync('ROLLBACK');
+      console.log('error inserting', error);
+    }
+    
     //get from mongoDB
     //if guest ignore
   };
@@ -176,7 +217,7 @@ export async function initDB() {
     endTime DATETIME,
     totalReps INTEGER,
     totalScore REAL,
-    synced INTEGER 0,
+    synced INTEGER DEFAULT 0,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);

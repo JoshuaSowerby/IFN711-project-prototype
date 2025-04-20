@@ -12,7 +12,7 @@ const DifficultyScreen = () => {
         <View style={styles.container}>
         <Text style={styles.title}>Choose Your Difficulty</Text>
 
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#4CAF50' }]} onPress={() => handleSelect(0)}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#4CAF50' }]} onPress={() => handleSelect('easy')}>
             {/*
             add to TouchableOpacity:
                 onPress={() => navigation.navigate('???')}
@@ -21,11 +21,11 @@ const DifficultyScreen = () => {
             <Text style={styles.buttonText}>Easy{'\n'}Beginner level</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#FFA500' }]} onPress={() => handleSelect(1)}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#FFA500' }]} onPress={() => handleSelect('medium')}>
             <Text style={styles.buttonText}>Medium{'\n'}Intermediate Level</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, { backgroundColor: '#F44336' }]} onPress={() => handleSelect(2)}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: '#F44336' }]} onPress={() => handleSelect('hard')}>
             <Text style={styles.buttonText}>Hard{'\n'}Advanced Level</Text>
         </TouchableOpacity>
         </View>

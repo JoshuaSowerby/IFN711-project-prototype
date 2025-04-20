@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text,  StyleSheet, TouchableOpacity } from 'react-native';
 import common from '../styles/common';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { getExercises } from '../db/exercises';
+import { getWorkouts } from '../db/workout';
 
 /*
 Install expo-sqlite
@@ -19,8 +19,7 @@ const ExerciseListScreen = () => {
 
   useEffect( () =>{
     const loadExercises = async () => {
-      //somehow broke getExercises
-      const exerciseData = await getExercises(difficulty);
+      const exerciseData = await getWorkouts(difficulty);
       setExercises(exerciseData);
     };
     loadExercises();

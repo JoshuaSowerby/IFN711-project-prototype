@@ -2,6 +2,9 @@
 # How to run
 ```
 cd 2025-03-29-figma-to-expo
+```
+create .env.dev.local and add EXPO_PUBLIC_API=where you are hosting the server
+```
 npm install
 npm run start:dev
 ```

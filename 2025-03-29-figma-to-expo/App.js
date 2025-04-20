@@ -13,6 +13,7 @@ import ExerciseListScreen from './screens/ExerciseListScreen';
 import { initDB } from './db/db';
 import ExerciseDetailsScreen from './screens/ExerciseDetailsScreen';
 import ExerciseScreen from './screens/ExerciseScreen.js'
+import SQLConsole from './components/SQLConsole.js';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -54,6 +55,7 @@ export default function App() {
   
   return (
     <NavigationContainer>
+      <SQLConsole/>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,

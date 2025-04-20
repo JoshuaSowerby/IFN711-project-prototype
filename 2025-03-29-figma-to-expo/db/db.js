@@ -58,6 +58,9 @@ export async function initDB() {
   let tablename;
 
   tablename='profile';
+  console.log(`DROPPING ${tablename}`)
+  await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
+
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tablename} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,7 +68,6 @@ export async function initDB() {
     bio TEXT,
     age INTEGER
     imageUrl TEXT,
-    difficulty INTEGER NOT NULL,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
@@ -112,14 +114,17 @@ export async function initDB() {
   //should only ever have one row
   ///!!!Install SecureStore for the JWT
   tablename ='user';
+  console.log(`DROPPING ${tablename}`)
+  await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
+
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS ${tablename} (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    gravityScore TEXT,
-    bio TEXT,
-    age INTEGER
+    gravityScore REAL,
+    bestScore REAL,
+    streak INTEGER
     imageUrl TEXT,
-    difficulty INTEGER NOT NULL,
+    lastActiveDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
     lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
@@ -127,6 +132,7 @@ export async function initDB() {
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
     console.log(`${tablename} is empty`);
+    makeReq('GET','')
     //get from mongoDB
     //if guest ignore
   };
@@ -208,7 +214,7 @@ export async function initDB() {
     totalScore: { type: Number, default: 0 }
   });
   */
-  
+  //exerciseId renamed to name to match workout
   tablename ='workoutSession';
   console.log(`DROPPING ${tablename}`)
   await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
@@ -240,28 +246,6 @@ export async function initDB() {
       I have Auth, which holds login info, their user hs auth+settings and score...
       we could move some of that to their profile...
   */
-
-
-  // We create all tables here? Is that a good idea?
-  //all tables should be created in this one statement? No split out for readability
-  // CURRENT_TIMESTAMP, '2025-01-01 00:00:00'
-
-
-  //await db.execAsync(`DROP TABLE IF EXISTS exercises`);
-
-  //CREATE scoreHistory table
-  await db.execAsync(`
-  CREATE TABLE IF NOT EXISTS scoreHistory (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  score REAL,
-  Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-  mongoDB_id TEXT,
-  synced INTEGER DEFAULT 0);
-  `);
-
-  //if empty populate with dummy data
-  //const scoreHistorycount = await db.getFirstAsync(`SELECT COUNT(*) as count FROM exercises;`);
-
 };
 
 

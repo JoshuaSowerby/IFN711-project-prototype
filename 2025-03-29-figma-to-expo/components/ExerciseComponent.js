@@ -59,9 +59,6 @@ const ExerciseComponent = (exercise) => {
     }else{
       if (sensorData.history.length>0){
         const score = scoreFunc(sensorData.history);
-        //
-        // insertNewScore({score:score}).then((result) => {
-        console.log(`hello? ${exercise.name}`);
         insertNewWorkoutSession({ name:exercise.name, difficulty:exercise.difficulty, startTime:startTime, totalReps:1, totalScore:score }).then((result) => {
           console.log("Score saved:", score);
           console.log("Insert result:", result);

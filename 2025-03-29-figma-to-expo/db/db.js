@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 import { makeReq } from '../api/makeReq';
-import { getWorkouts } from './workout';
 
 export const dbPromise = SQLite.openDatabaseAsync('example.db');
 /*
@@ -113,6 +112,7 @@ export async function initDB() {
   */
   //should only ever have one row
   ///!!!Install SecureStore for the JWT
+  //favorites needs to be its own table
   tablename ='user';
   console.log(`DROPPING ${tablename}`)
   await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
@@ -132,7 +132,7 @@ export async function initDB() {
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
     console.log(`${tablename} is empty`);
-    makeReq('GET','')
+    //makeReq('GET','')
     //get from mongoDB
     //if guest ignore
   };
@@ -234,13 +234,54 @@ export async function initDB() {
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
     console.log(`${tablename} is empty`);
-    //get from mongoDB
+    try {
+      console.log(`${tablename} is empty`);
+      console.log('API subject to change');
+      
+      const sessionsToAdd = await makeReq('GET', 'session');
+      console.log('ADD CHECK IF EMPTY');
+      await db.execAsync(`BEGIN TRANSACTION`);
+      for (const item of sessionsToAdd){
+        
+        await db.runAsync(`
+          INSERT INTO workoutSession (
+          name,
+          difficulty,
+          startTime,
+          endTime,
+          totalReps,
+          totalScore,
+          synced,
+          mongo_id,
+          lastUpdated) VALUES (?,?,?,?,?,?,?,?,?)
+          `,
+          [ item.exerciseId,
+            item.difficulty,
+            item.startTime,
+            item.endTime,
+            item.totalReps,
+            item.totalScore,
+            1,
+            item._id,
+            new Date().toISOString().slice(0, 19).replace('T', ' ') ]
+        );
+      };
+      await db.execAsync('COMMIT');
+      console.log(`${tablename} insert success`);
+      //await getWorkouts();
+    } catch (error) {
+      await db.execAsync('ROLLBACK');
+      console.log('error inserting', error);
+    }
+
+    
+    //get from mongoDB, no direct get...
     //if guest ignore
   };
 
   /*//DIFFERENCES
     NOT PRESENT
-      scoreHistory, or exerciseHistory
+      scoreHistory, or exerciseHistory : equivalent is workoutSessions but no direct get
       leaderboard
     DIFFERENT
       I have Auth, which holds login info, their user hs auth+settings and score...

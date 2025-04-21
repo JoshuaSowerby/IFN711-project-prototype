@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { makeReq } from '../api/makeReq';
+import { timeNow } from '../utils/timeNow';
 
 export const dbPromise = SQLite.openDatabaseAsync('example.db');
 /*
@@ -188,7 +189,7 @@ export async function initDB() {
             item.muscleGroup,
             1,
             item._id,
-            new Date().toISOString().slice(0, 19).replace('T', ' ') ]
+            timeNow() ]
         );
       };
       await db.execAsync('COMMIT');
@@ -263,7 +264,7 @@ export async function initDB() {
             item.totalScore,
             1,
             item._id,
-            new Date().toISOString().slice(0, 19).replace('T', ' ') ]
+            new timeNow() ]
         );
       };
       await db.execAsync('COMMIT');

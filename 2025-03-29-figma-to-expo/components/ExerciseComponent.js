@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import SimulatedSensor from './simulated';
 import { insertNewWorkoutSession, getLastScore } from '../db/workoutSession';
+import { timeNow } from '../utils/timeNow';
 
 const scoreFunc = array => {
   try {
@@ -45,7 +46,7 @@ const ExerciseComponent = (exercise) => {
   useEffect(() => {
     let timer;
     if (isWorkoutActive) {
-      setStartTime( new Date().toISOString().slice(0, 19).replace('T', ' '));//should import this so it is easier to read
+      setStartTime( timeNow());//should import this so it is easier to read
       timer = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {

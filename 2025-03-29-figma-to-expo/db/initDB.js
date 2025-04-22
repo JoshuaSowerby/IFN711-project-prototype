@@ -64,7 +64,7 @@ export async function initDB() {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT,
     bio TEXT,
-    age INTEGER
+    age INTEGER,
     imageUrl TEXT,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
@@ -73,6 +73,39 @@ export async function initDB() {
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
     console.log(`${tablename} is empty`);
+    try {
+        console.log('API subject to change');
+        
+        const profileToAdd = await makeReq('GET','profile' );
+        console.log(`should only be one entry in${tablename} PLEASE ADDD CHECK to make sure this is true`);
+        await db.execAsync(`BEGIN TRANSACTION`);
+
+        await db.runAsync(`
+        INSERT INTO ${tablename} (
+        username,
+        bio,
+        age,
+        imageUrl,
+        synced,
+        mongo_id,
+        lastUpdated) VALUES (?,?,?,?,?,?,?)
+        `,
+        [   profileToAdd.username,
+            profileToAdd.bio,
+            profileToAdd.age,
+            profileToAdd.imageUrl,
+            1,
+            profileToAdd._id,
+            timeNow() ]
+        );
+
+        await db.execAsync('COMMIT');
+        console.log(`${tablename} insert success`);
+        //await getWorkouts();
+      } catch (error) {
+        await db.execAsync('ROLLBACK');
+        console.log(`error inserting ${tablename}`, error);
+      }
     //get from mongoDB
     //if guest ignore
   };
@@ -234,7 +267,6 @@ export async function initDB() {
   if (count.count ===0){
     console.log(`${tablename} is empty`);
     try {
-      console.log(`${tablename} is empty`);
       console.log('API subject to change');
       
       const sessionsToAdd = await makeReq('GET', 'session');

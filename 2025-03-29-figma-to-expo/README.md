@@ -3,7 +3,9 @@
 ```
 cd 2025-03-29-figma-to-expo
 ```
-create .env.dev.local and add EXPO_PUBLIC_API=where you are hosting the server/api/
+create .env.dev.local and
+- add EXPO_PUBLIC_API="your IP"/api/
+- add EXPO_PUBLIC_TOKEN="your token here"
 ```
 npm install
 npm run start:dev

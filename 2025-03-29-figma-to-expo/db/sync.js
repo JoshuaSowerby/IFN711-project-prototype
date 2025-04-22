@@ -52,23 +52,26 @@ export const getFromMongoDB = async (tablename) => {
 };
 
 //untested
-export const sendToMongoDB = async (tablename) =>{
+export const sendToMongoDB = async (tablename, columns) =>{
+    // you have to specify the relevant columns
     const endpoint=`${process.env.EXPO_PUBLIC_API}sync/local/${tablename}`
     const db = await dbPromise;
     // this select statement probbly has some redundant columns...
     const selectStatement=`
-    SELECT * FROM ${tablename}
+    SELECT id, ${columns} FROM ${tablename}
     WHERE synced = 0;
     `;
     const localOnlyRows = await db.getAllAsync(selectStatement);
     console.log(`${path} please format localOnlyRows`);
     const result = await makeReq('POST', endpoint, localOnlyRows);
+    //result = [ {id:SQLite id, mongo_id: MongoDB _id}, ... ]
     //The POST req will handle confliciting results using timestamps
     //if successful
     console.log(`${path} add proper if result successful check`);
     if (result.ok){
-        //update synced to 1
+        for (item of result.mongo_ids){
+            await db.runAsync(`UPDATE ${tablename} SET synced = ?, mongo_id= ? WHERE id = ?`, [1, item.mongo_id,item.id]);
+        }
         console.log(result);
-        await db.runAsync(`UPDATE ${tablename} SET synced = ? WHERE synced = ?`, [1, 0]);
     };
 }

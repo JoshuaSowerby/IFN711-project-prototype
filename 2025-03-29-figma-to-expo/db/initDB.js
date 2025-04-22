@@ -256,6 +256,58 @@ export async function initDB() {
     //if guest ignore
   };
 
+  //GravityFitScoreHistory
+  /**
+   * lastScore|lastDecay|synced|mongo_id|lastUpdated
+   * mongo_id and sycing would be hard as this is calculated from other things, unless we recalculate on mongo side to ensure correct
+   */
+  tablename ='totalScoreHistory';
+  console.log(`DROPPING ${tablename}`)
+  await db.execAsync(`DROP TABLE IF EXISTS ${tablename};`);
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS ${tablename} (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    totalScore REAL,
+    lastDecay DATETIME,
+    synced INTEGER DEFAULT 0,
+    mongo_id TEXT,
+    lastUpdated DATETIME);
+  `);
+  count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+  if (count.count ===0){
+    console.log(`${tablename} is empty`);
+    await db.runAsync(`
+      INSERT INTO totalScoreHistory (
+      totalScore,
+      lastDecay,
+      lastUpdated)
+      VALUES (?, ?, ?);`,
+      [ 0,
+        new Date.toISOString(),
+        new Date().toISOString()]);
+    //NO SERVER YET
+    // try {
+    //   console.log('API subject to change');
+      
+    //   const totalScoreToAdd = await makeReq('GET', 'totalScoreHistory');
+    //   console.log('ADD CHECK IF EMPTY');
+      
+    //   await db.execAsync(`BEGIN TRANSACTION`);
+    //   for (const item of totalScoreToAdd){
+    //     const query=formatTotalScoreHistory(item);
+    //     await db.runAsync(query.statement,query.vars);
+    //   };
+    //   await db.execAsync('COMMIT');
+    //   console.log(`${tablename} insert success`);
+    //   //await getWorkouts();
+    // } catch (error) {
+    //   await db.execAsync('ROLLBACK');
+    //   console.log('error inserting', error);
+    // }
+    //get from mongoDB, no direct get...
+    //if guest ignore
+  };
+
 
   /*//DIFFERENCES
     NOT PRESENT

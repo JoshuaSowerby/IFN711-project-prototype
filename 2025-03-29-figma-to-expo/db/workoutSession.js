@@ -43,6 +43,17 @@ export async function insertNewWorkoutSession(data) {
   const { name, difficulty, startTime, totalReps, totalScore } = data;
 
   await db.runAsync(insertStatement, [name, difficulty, startTime, totalReps, totalScore]);
+  //get last totalScore, add this to it, assume there is always one score (I will init with 0 if there are none in initDBs)
+  const lastScore = await db.getFirstAsync(`SELECT totalScore, lastDecay FROM totalScoreHistory ORDER BY lastUpdated DESC;`);
+  await db.runAsync(`
+    INSERT INTO totalScoreHistory (
+    totalScore,
+    lastDecay,
+    lastUpdated)
+    VALUES (?, ?, ?);`,
+    [ lastScore.totalScore+totalScore,
+      lastScore.lastDecay,
+      new Date().toISOString()]);
 };
 
 //Should make this more generic, for now just gets last score in scoreHistory

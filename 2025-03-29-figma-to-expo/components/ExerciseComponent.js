@@ -39,7 +39,10 @@ const ExerciseComponent = (exercise) => {
   const [startTime, setStartTime] = useState('');
   
   useEffect(() => {
-    updateLastScore();//Not sure if this needs to be wrpped in async or not... probably doesnt matter if it is late
+    (async () =>{
+      updateLastScore();
+    })();
+    
   }, []);
   
   // workout timer useEffect
@@ -76,7 +79,7 @@ const ExerciseComponent = (exercise) => {
   //should these be before useEffects?
   const updateLastScore= async () =>{
     const result = await getLastScore();
-    setLastScore(result?.score ?? 'No score')//if result.score not null/exists us it else "no score"
+    setLastScore(result?.totalScore ?? 'No score')//if result.score not null/exists us it else "no score"
   };
 
   const startWorkout = () => {

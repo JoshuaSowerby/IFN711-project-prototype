@@ -10,10 +10,11 @@ import LeaderboardScreen from './screens/LeaderboardScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { Ionicons } from '@expo/vector-icons';
 import ExerciseListScreen from './screens/ExerciseListScreen';
-import { initDB } from './db/db';
+import { initDB } from './db/initDB.js';
 import ExerciseDetailsScreen from './screens/ExerciseDetailsScreen';
 import ExerciseScreen from './screens/ExerciseScreen.js'
 import SQLConsole from './components/SQLConsole.js';
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

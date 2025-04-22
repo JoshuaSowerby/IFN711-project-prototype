@@ -1,6 +1,9 @@
 import { makeReq } from '../api/makeReq';
 import { timeNow } from '../utils/timeNow';
 import { dbPromise } from './db';
+import { formatInsertWorkout } from './workout';
+import { formatInsertWorkoutSession } from './workoutSession';
+import { formatInsertProfile } from './profile';
 /*
 SYNCING
 - SQLite tables will have 1 extra column, mongo_id this will be the mongoDB tables _id,
@@ -79,25 +82,8 @@ export async function initDB() {
         const profileToAdd = await makeReq('GET','profile' );
         console.log(`should only be one entry in${tablename} PLEASE ADDD CHECK to make sure this is true`);
         await db.execAsync(`BEGIN TRANSACTION`);
-
-        await db.runAsync(`
-        INSERT INTO ${tablename} (
-        username,
-        bio,
-        age,
-        imageUrl,
-        synced,
-        mongo_id,
-        lastUpdated) VALUES (?,?,?,?,?,?,?)
-        `,
-        [   profileToAdd.username,
-            profileToAdd.bio,
-            profileToAdd.age,
-            profileToAdd.imageUrl,
-            1,
-            profileToAdd._id,
-            timeNow() ]
-        );
+        const query = formatInsertProfile(profileToAdd);
+        await db.runAsync(query.statement,query.vars);
 
         await db.execAsync('COMMIT');
         console.log(`${tablename} insert success`);
@@ -203,25 +189,8 @@ export async function initDB() {
       // console.log(workoutToAdd);
       await db.execAsync(`BEGIN TRANSACTION`);
       for (const item of workoutToAdd){
-        // console.log(item.difficulty);
-        await db.runAsync(`
-          INSERT INTO workout (
-          name,
-          difficulty,
-          description,
-          muscleGroup,
-          synced,
-          mongo_id,
-          lastUpdated) VALUES (?,?,?,?,?,?,?)
-          `,
-          [ item.name,
-            item.difficulty,
-            item.description,
-            item.muscleGroup,
-            1,
-            item._id,
-            timeNow() ]
-        );
+        const query=formatInsertWorkout(item);
+        await db.runAsync(query.statement,query.vars);
       };
       await db.execAsync('COMMIT');
       console.log(`workout insert success`);
@@ -270,36 +239,14 @@ export async function initDB() {
       console.log('API subject to change');
       
       const sessionsToAdd = await makeReq('GET', 'session');
-      console.log(sessionsToAdd);
       console.log('ADD CHECK IF EMPTY');
       await db.withTransactionAsync( async (tx) => {
         
       })
       await db.execAsync(`BEGIN TRANSACTION`);
       for (const item of sessionsToAdd){
-        
-        await db.runAsync(`
-          INSERT INTO workoutSession (
-          name,
-          difficulty,
-          startTime,
-          endTime,
-          totalReps,
-          totalScore,
-          synced,
-          mongo_id,
-          lastUpdated) VALUES (?,?,?,?,?,?,?,?,?)
-          `,
-          [ item.exerciseId,
-            item.difficulty,
-            item.startTime,
-            item.endTime,
-            item.totalReps,
-            item.totalScore,
-            1,
-            item._id,
-            timeNow() ]
-        );
+        const query=formatInsertWorkoutSession(item);
+        await db.runAsync(query.statement,query.vars);
       };
       await db.execAsync('COMMIT');
       console.log(`${tablename} insert success`);

@@ -1,3 +1,4 @@
+import { timeNow } from "../utils/timeNow";
 import { dbPromise } from "./db";
 
 //please add comments showing how the output is structured
@@ -29,3 +30,23 @@ export async function getWorkouts(difficulty){
     }
     
   };
+
+export function formatInsertWorkout(item){
+  return {statement:`
+    INSERT INTO workout (
+    name,
+    difficulty,
+    description,
+    muscleGroup,
+    synced,
+    mongo_id,
+    lastUpdated) VALUES (?,?,?,?,?,?,?)
+    `, vars:
+    [ item.name,
+      item.difficulty,
+      item.description,
+      item.muscleGroup,
+      1,
+      item._id,
+      timeNow() ]};
+};

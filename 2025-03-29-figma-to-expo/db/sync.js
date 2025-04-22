@@ -1,15 +1,22 @@
 import { makeReq } from "../api/makeReq";
 import { dbPromise } from "./db";
+import { formatInsertProfile } from "./profile";
+import { formatInsertWorkout } from "./workout";
+import { formatInsertWorkoutSession } from "./workoutSession";
+
+
+
 
 
 const path=`2025-03-29-figma-to-expo/db/sync.js`
-//we could combine the functions to be one...
-const getFromMongoDB = async () => {
+
+
+//untested
+export const getFromMongoDB = async (tablename) => {
+    const endpoint=`${process.env.EXPO_PUBLIC_API}sync/remote/${tablename}`
     const db = await dbPromise;
-    tablename;
-    endpoint;
     const selectStatement=`
-    SELECT mongo_id FROM ${tablename};
+    SELECT mongo_id, lastUpdated FROM ${tablename};
     `;
     const syncedRows = await db.getAllAsync(selectStatement);
     console.log(`${path} please format syncedRows`);
@@ -19,16 +26,35 @@ const getFromMongoDB = async () => {
     //This will return all rows that are not present in app using the mongo_id as a filter
     const result = await makeReq('POST', endpoint, syncedRows);
     console.log(`${path} add proper if result successful check`);
-    if (result){//if the result is valid and exists
-        const insertStatement=`INSERT INTO ${tablename};`;//fix
-        await db.execAsync(insertStatement)
+    if (result.ok){//if the result is valid and exists
+
+        await db.execAsync(`BEGIN TRANSACTION`);
+        if (tablename === 'Workout'){
+            for (item of result){
+                const query=formatInsertWorkout(item);
+                await db.runAsync(query.statement,query.vars);
+            };
+        }else if (tablename === 'Profile'){
+            for (item of result){
+                const query=formatInsertProfile(item);
+                await db.runAsync(query.statement,query.vars);
+            };
+        }else if (tablename === 'WorkoutSession'){
+            for (item of result){
+                const query=formatInsertWorkoutSession(item);
+                await db.runAsync(query.statement,query.vars);
+            };
+        };
+        await db.execAsync('COMMIT');
+        console.log(`${tablename} insert success`);
+        
     };
 };
 
-const sendToMongoDB = async () =>{
+//untested
+export const sendToMongoDB = async (tablename) =>{
+    const endpoint=`${process.env.EXPO_PUBLIC_API}sync/local/${tablename}`
     const db = await dbPromise;
-    tablename;
-    endpoint;
     // this select statement probbly has some redundant columns...
     const selectStatement=`
     SELECT * FROM ${tablename}
@@ -40,7 +66,9 @@ const sendToMongoDB = async () =>{
     //The POST req will handle confliciting results using timestamps
     //if successful
     console.log(`${path} add proper if result successful check`);
-    if (result){
+    if (result.ok){
         //update synced to 1
+        console.log(result);
+        await db.runAsync(`UPDATE ${tablename} SET synced = ? WHERE synced = ?`, [1, 0]);
     };
 }

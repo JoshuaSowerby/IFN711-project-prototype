@@ -22,6 +22,7 @@
 //   mongoDB_id TEXT,
 //   synced INTEGER DEFAULT 0);
 //   `);
+import { timeNow } from "../utils/timeNow";
 import { dbPromise } from "./db";
 
 export async function insertNewWorkoutSession(data) {
@@ -60,4 +61,28 @@ export async function getWorkoutSessionHistory() {
   const db = await dbPromise;
   const allRows = await db.getAllAsync('SELECT * FROM workoutSession ORDER BY endTime DESC');
   return allRows;
+};
+
+export function formatInsertWorkoutSession(item){
+  return {statement:`
+          INSERT INTO workoutSession (
+          name,
+          difficulty,
+          startTime,
+          endTime,
+          totalReps,
+          totalScore,
+          synced,
+          mongo_id,
+          lastUpdated) VALUES (?,?,?,?,?,?,?,?,?)
+          `,
+          vars:[ item.exerciseId,
+            item.difficulty,
+            item.startTime,
+            item.endTime,
+            item.totalReps,
+            item.totalScore,
+            1,
+            item._id,
+            timeNow() ]};
 };

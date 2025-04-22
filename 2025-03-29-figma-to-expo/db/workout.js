@@ -1,4 +1,3 @@
-import { timeNow } from "../utils/timeNow";
 import { dbPromise } from "./db";
 
 //please add comments showing how the output is structured
@@ -48,5 +47,5 @@ export function formatInsertWorkout(item){
       item.muscleGroup,
       1,
       item._id,
-      timeNow() ]};
+      new Date().toISOString() ]};
 };

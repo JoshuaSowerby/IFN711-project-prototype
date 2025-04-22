@@ -22,7 +22,6 @@
 //   mongoDB_id TEXT,
 //   synced INTEGER DEFAULT 0);
 //   `);
-import { timeNow } from "../utils/timeNow";
 import { dbPromise } from "./db";
 
 export async function insertNewWorkoutSession(data) {
@@ -84,5 +83,5 @@ export function formatInsertWorkoutSession(item){
             item.totalScore,
             1,
             item._id,
-            timeNow() ]};
+            new Date().toISOString() ]};
 };

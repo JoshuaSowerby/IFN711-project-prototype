@@ -17,5 +17,5 @@ export function formatInsertProfile(item){
         item.imageUrl,
         1,
         item._id,
-        timeNow() ]};
+        new Date().toISOString() ]};
 };

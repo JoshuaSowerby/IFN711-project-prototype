@@ -1,5 +1,4 @@
 import { makeReq } from '../api/makeReq';
-import { timeNow } from '../utils/timeNow';
 import { dbPromise } from './db';
 import { formatInsertWorkout } from './workout';
 import { formatInsertWorkoutSession } from './workoutSession';
@@ -71,7 +70,7 @@ export async function initDB() {
     imageUrl TEXT,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+    lastUpdated DATETIME);
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
@@ -142,10 +141,10 @@ export async function initDB() {
     bestScore REAL,
     streak INTEGER
     imageUrl TEXT,
-    lastActiveDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    lastActiveDate DATETIME,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+    lastUpdated DATETIME);
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
@@ -176,7 +175,7 @@ export async function initDB() {
     muscleGroup TEXT,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00'
+    lastUpdated DATETIME'
     );
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
@@ -230,7 +229,7 @@ export async function initDB() {
     totalScore REAL,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME DEFAULT '2000-01-01 00:00:00');
+    lastUpdated DATETIME);
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
@@ -240,9 +239,7 @@ export async function initDB() {
       
       const sessionsToAdd = await makeReq('GET', 'session');
       console.log('ADD CHECK IF EMPTY');
-      await db.withTransactionAsync( async (tx) => {
-        
-      })
+
       await db.execAsync(`BEGIN TRANSACTION`);
       for (const item of sessionsToAdd){
         const query=formatInsertWorkoutSession(item);
@@ -255,11 +252,10 @@ export async function initDB() {
       await db.execAsync('ROLLBACK');
       console.log('error inserting', error);
     }
-
-    
     //get from mongoDB, no direct get...
     //if guest ignore
   };
+
 
   /*//DIFFERENCES
     NOT PRESENT

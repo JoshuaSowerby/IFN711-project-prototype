@@ -14,6 +14,7 @@ import { initDB } from './db/initDB.js';
 import ExerciseDetailsScreen from './screens/ExerciseDetailsScreen';
 import ExerciseScreen from './screens/ExerciseScreen.js'
 import SQLConsole from './components/SQLConsole.js';
+import { dailyDecay } from './utils/decay.js';
 
 
 const Stack = createNativeStackNavigator();
@@ -49,6 +50,8 @@ export default function App() {
       }
     })(); // envoke async
   }, []);
+
+  dailyDecay(isDbReady);//checks and applies daily decay on load
 
   if (!isDbReady) {
     return <Text>Loading...</Text>;

@@ -175,7 +175,7 @@ export async function initDB() {
     muscleGroup TEXT,
     synced INTEGER DEFAULT 0,
     mongo_id TEXT,
-    lastUpdated DATETIME'
+    lastUpdated DATETIME
     );
   `);
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
@@ -258,6 +258,7 @@ export async function initDB() {
 
   //GravityFitScoreHistory
   /**
+   * The latest should be used for leaderboard, I think
    * lastScore|lastDecay|synced|mongo_id|lastUpdated
    * mongo_id and sycing would be hard as this is calculated from other things, unless we recalculate on mongo side to ensure correct
    */
@@ -276,6 +277,7 @@ export async function initDB() {
   count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
   if (count.count ===0){
     console.log(`${tablename} is empty`);
+    console.log(`${tablename} Not fully implemented, GET from Mongo`)
     await db.runAsync(`
       INSERT INTO totalScoreHistory (
       totalScore,
@@ -283,7 +285,7 @@ export async function initDB() {
       lastUpdated)
       VALUES (?, ?, ?);`,
       [ 0,
-        new Date.toISOString(),
+        new Date().toISOString(),
         new Date().toISOString()]);
     //NO SERVER YET
     // try {

@@ -10,3 +10,13 @@ create .env.dev.local and
 npm install
 npm run start:dev
 ```
+
+#Todo
+- test syncing
+- implement proper scoring system
+- add login
+- add guest mode
+- implement leaderbard using totalScoreHistory, and add its mongo counterpart
+- syncing of totalScoreHistores across multiple devices, requires server side processing to merge inconsistencies
+- achievements and badges
+- something else I am forgetting

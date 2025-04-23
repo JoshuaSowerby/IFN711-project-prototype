@@ -1,4 +1,3 @@
-import { timeNow } from "../utils/timeNow";
 
 export function formatInsertProfile(item){
   return {statement:`

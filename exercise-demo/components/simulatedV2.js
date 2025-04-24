@@ -8,8 +8,13 @@ Why this is bad
 - radius increases take up more area
 - peole are bad at reading size
 - small (unless we make landscape)
-Changes
+- ratios make them all move constantly
+- unclear when doing good, unclear that you need to be between the blue and red lines
+- should probably use precise sizes for everything then scale them because at the moment the limits are arbitrary
+Suggested changes
 - rather than circles, could just be bars, then it is just height
+- make them rings not circles so It is clearer where you are
+- could use rings rather than lines for optimal limits, then we could offse 2 of the circles for more room
 */
 
 
@@ -138,27 +143,49 @@ export const SimulatedSensorV2 = ({onSensorData, limits}) =>{
         circle: {
           borderRadius: 999,
           backgroundColor: 'magenta',
-          width: 20,
-          height: 20,
+          width: 30,
+          height: 30,
           margin:'15%'
         },
+        stretchBarRow: {
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'flex-end',
+          width: '40%',
+          height: 50,
+        },
+        barContainer: {
+          width: 20,
+          bottom:'10%',
+          position: 'absolute',
+          height: '20%',
+          backgroundColor: '#ddd',
+          borderRadius: 6,
+          overflow: 'hidden',
+          flexDirection: 'column-reverse',
+        },
+        fill: {
+          backgroundColor: 'limegreen',
+        },
+        empty: {
+          backgroundColor: 'transparent',
+        },
       });
-    const lSize=10;
-    const mSize=10;
-    const rSize=10;
 
+    //ratio*3 as optimal is 1/3, so no scaling at optimal? but we want min size, so add 1? or use actual min
     const lRatio = () =>{
         const total=sensorReading.leftBack+sensorReading.rightBack+sensorReading.middleBack;
-        return (sensorReading.leftBack/total)*3+1
-    }
+        return Math.max((sensorReading.leftBack/total)*3,.5);
+    };
     const mRatio = () =>{
         const total=sensorReading.leftBack+sensorReading.rightBack+sensorReading.middleBack;
-        return (sensorReading.middleBack/total)*3+1
-    }
+        return Math.max((sensorReading.middleBack/total)*3,.5);
+    };
     const rRatio = () =>{
         const total=sensorReading.leftBack+sensorReading.rightBack+sensorReading.middleBack;
-        return (sensorReading.rightBack/total)*3+1
-    }
+        return Math.max((sensorReading.rightBack/total)*3,.5);
+    };
+
     return(
         <View style={styles.container}>
             {/* Limit lines */}
@@ -172,6 +199,14 @@ export const SimulatedSensorV2 = ({onSensorData, limits}) =>{
                 <View style={[styles.circle, { transform: [{ scale: lRatio() }] }]}/>
                 <View style={[styles.circle, { transform: [{ scale: mRatio() }] }]}/>
                 <View style={[styles.circle, { transform: [{ scale: rRatio() }] }]}/>
+            </View>
+            <View style={[styles.barContainer, {left:'30%'}]}>
+                <View style={[styles.fill, { flex: sensorReading.leftArm/100 }]} />
+                <View style={[styles.empty, { flex: 1 - sensorReading.leftArm/100 }]} />
+            </View>
+            <View style={[styles.barContainer, {right:'30%'}]}>
+                <View style={[styles.fill, { flex: sensorReading.rightArm/100 }]} />
+                <View style={[styles.empty, { flex: 1 - sensorReading.rightArm/100 }]} />
             </View>
         </View>
     )

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { login } from '../api/authentication';
+import GravityFitLogo from '../assets/GravityFit_Logo.png'; 
 
 const LoginScreen = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -15,14 +16,12 @@ const LoginScreen = ({ onLogin }) => {
     }
 
     try {
-      response = await login(email,password)
-
+      const response = await login(email, password);
       if (response) {
         Alert.alert('Success', 'Logged in successfully!');
-        // Navigate to your main app screen
         onLogin();
       } else {
-        Alert.alert('Error' || 'Login failed. Please check your credentials.');
+        Alert.alert('Error', 'Login failed. Please check your credentials.');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -36,7 +35,10 @@ const LoginScreen = ({ onLogin }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>GravityFit</Text>
+      {/* ✅ Company Logo */}
+      <Image source={GravityFitLogo} style={styles.logoImage} resizeMode="contain" />
+
+      {/* Login Inputs */}
       <Text style={styles.label}>Email:</Text>
       <TextInput
         style={styles.input}
@@ -46,6 +48,7 @@ const LoginScreen = ({ onLogin }) => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <Text style={styles.label}>Password:</Text>
       <TextInput
         style={styles.input}
@@ -54,11 +57,15 @@ const LoginScreen = ({ onLogin }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {/* Login Button */}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
+
+      {/* Navigation Link */}
       <View style={styles.bottomTextContainer}>
-        <Text style={styles.bottomText}>Don't have an account ? </Text>
+        <Text style={styles.bottomText}>Don't have an account? </Text>
         <TouchableOpacity onPress={navigateToSignUp}>
           <Text style={[styles.bottomText, styles.linkText]}>Sign Up</Text>
         </TouchableOpacity>
@@ -74,12 +81,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  logo: {
-    color: 'white',
-    fontSize: 28,
-    fontWeight: 'bold',
+  logoImage: {
+    width: 200,
+    height: 80,
+    alignSelf: 'center',
     marginBottom: 30,
-    textAlign: 'center',
   },
   label: {
     color: 'white',

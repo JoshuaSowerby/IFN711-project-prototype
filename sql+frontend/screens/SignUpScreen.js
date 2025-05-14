@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { register } from '../api/authentication';
+import GravityFitLogo from '../assets/GravityFit_Logo.png'; // ✅ Logo image
 
 const SignUpScreen = () => {
   const [name, setName] = useState('');
@@ -16,9 +17,10 @@ const SignUpScreen = () => {
     }
 
     try {
-      ok=await register(email, name, password);
-      if(ok){
-        console.log('not implemented')
+      const ok = await register(email, name, password);
+      if (ok) {
+        Alert.alert('Success', 'Account created successfully!');
+        navigation.navigate('Login');
       }
     } catch (error) {
       console.error('Sign up error:', error);
@@ -32,7 +34,10 @@ const SignUpScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>GravityFit</Text>
+      {/* ✅ Logo */}
+      <Image source={GravityFitLogo} style={styles.logoImage} resizeMode="contain" />
+
+      {/* Form Fields */}
       <Text style={styles.label}>Name:</Text>
       <TextInput
         style={styles.input}
@@ -40,6 +45,7 @@ const SignUpScreen = () => {
         value={name}
         onChangeText={setName}
       />
+
       <Text style={styles.label}>Email:</Text>
       <TextInput
         style={styles.input}
@@ -49,6 +55,7 @@ const SignUpScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
       <Text style={styles.label}>Password:</Text>
       <TextInput
         style={styles.input}
@@ -57,11 +64,15 @@ const SignUpScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {/* Submit Button */}
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+
+      {/* Bottom Link */}
       <View style={styles.bottomTextContainer}>
-        <Text style={styles.bottomText}>Already have an account ? </Text>
+        <Text style={styles.bottomText}>Already have an account? </Text>
         <TouchableOpacity onPress={navigateToLogin}>
           <Text style={[styles.bottomText, styles.linkText]}>Log In</Text>
         </TouchableOpacity>
@@ -77,12 +88,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  logo: {
-    color: 'white',
-    fontSize: 28,
-    fontWeight: 'bold',
+  logoImage: {
+    width: 200,
+    height: 80,
+    alignSelf: 'center',
     marginBottom: 30,
-    textAlign: 'center',
   },
   label: {
     color: 'white',

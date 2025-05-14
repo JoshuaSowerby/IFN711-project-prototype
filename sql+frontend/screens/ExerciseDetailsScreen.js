@@ -1,71 +1,88 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { insertExerciseHistory } from '../db/exerciseHistory';
+import { Video } from 'expo-av';
 
-// Dummy image URL - replace with actual image or video thumbnail
-const dummyVideoThumbnail = 'https://via.placeholder.com/320x180/000000/FFFFFF?Text=Video+Thumbnail';
-
-// Dummy instructions - replace with actual instructions from your database
-const dummyInstructions = [
-  'Step 1: Stand with feet shoulder-width apart.',
-  'Step 2: Hold the resistance band with both hands, slightly wider than shoulder-width.',
-  'Step 3: Pull the band apart, keeping your arms straight, until your hands are in line with your shoulders.',
-];
+// 🎥 Video & thumbnail mappings by difficulty and index
+const videoMap = {
+  easy: [
+    { video: require('../assets/videos/shoulder_01.mp4'), thumb: require('../assets/thumbnails/shoulder01_thumb.jpg') },
+    { video: require('../assets/videos/shoulder_02_onwall.mp4'), thumb: require('../assets/thumbnails/shoulder02onwall_thumb.jpg') },
+    { video: require('../assets/videos/shoulder_01.mp4'), thumb: require('../assets/thumbnails/shoulder01_thumb.jpg') },
+  ],
+  medium: [
+    { video: require('../assets/videos/medium_exercise.mp4'), thumb: require('../assets/thumbnails/medium_exercise_thumb.jpg') },
+    { video: require('../assets/videos/medium_exercise.mp4'), thumb: require('../assets/thumbnails/medium_exercise_thumb.jpg') },
+    { video: require('../assets/videos/medium_exercise.mp4'), thumb: require('../assets/thumbnails/medium_exercise_thumb.jpg') },
+  ],
+  hard: [
+    { video: require('../assets/videos/golf_swing.mp4'), thumb: require('../assets/thumbnails/golf_swing_thumb.jpg') },
+    { video: require('../assets/videos/golf_stretch.mp4'), thumb: require('../assets/thumbnails/golf_stretch_thumb.jpg') },
+    { video: require('../assets/videos/golf_swing_woman.mp4'), thumb: require('../assets/thumbnails/golf_swing_woman_thumb.jpg') },
+  ],
+};
 
 const ExerciseDetailsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { exercise } = route.params; // Get the exercise object passed from the list screen
+  const { exercise } = route.params;
+
+  const [showVideo, setShowVideo] = useState(false);
+
+  // Determine index for current exercise in the list
+  const difficulty = exercise.difficulty;
+  const index = Math.max(0, (exercise.id - 1) % 3);
+  const { video, thumb } = videoMap[difficulty][index];
 
   const handleStartExercise = () => {
-    console.log('Start Exercise pressed for:', exercise.exerciseName);
-    if (exercise.difficulty==='easy'){
-      score=100
-    }else if(exercise.difficulty==='medium'){
-      score=1000
-    }else if (exercise.difficulty==='hard'){
-      score=10000
-    }
-    console.log(`${exercise.difficulty} ${score}`)
-    insertExerciseHistory(exercise.exerciseName, score)
-    // Navigate to the actual exercise screen
-    // navigation.navigate('Exercise', { exercise });
+    let score = 0;
+    if (difficulty === 'easy') score = 100;
+    else if (difficulty === 'medium') score = 1000;
+    else if (difficulty === 'hard') score = 10000;
+
+    insertExerciseHistory(exercise.exerciseName, score);
+    navigation.navigate('Exercise', { exercise, score });
   };
 
   return (
     <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.headerText}>{exercise?.exerciseName || 'Exercise Details'}</Text>
-            <Ionicons name="person-outline" size={24} color="white" />
-        </View>
+      {/* Header */}
+      <Text style={styles.exerciseTitle}>{exercise.exerciseName}</Text>
 
-        {/* Video/Image Section */}
-        <View style={styles.videoContainer}>
-            <Image source={{ uri: dummyVideoThumbnail }} style={styles.videoThumbnail} />
-            <TouchableOpacity style={styles.playButton}>
-            <Ionicons name="play-circle" size={60} color="white" />
-            </TouchableOpacity>
-        </View>
+      {/* Video Section */}
+      <View style={styles.videoContainer}>
+        {showVideo ? (
+          <Video
+            source={video}
+            useNativeControls
+            resizeMode="contain"
+            style={styles.video}
+            shouldPlay
+          />
+        ) : (
+          <TouchableOpacity style={styles.thumbnailWrapper} onPress={() => setShowVideo(true)}>
+            <Image source={thumb} style={styles.thumbnail} />
+            <View style={styles.playButtonOverlay}>
+              <Text style={styles.playIcon}>▶</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      </View>
 
-        {/* Description */}
-        <Text style={styles.description}>{exercise?.description || 'err'}</Text>
+      <Text style={styles.description}>{exercise.description}</Text>
 
-        {/* How to Perform */}
-        <Text style={styles.instructionsTitle}>How to Perform</Text>
-        {dummyInstructions.map((step, index) => (
-            <Text key={index} style={styles.instructionStep}>{step}</Text>
+      {/* Instructions */}
+      <Text style={styles.instructionsTitle}>How to Perform</Text>
+      {(exercise.instructions || 'Step 1\nStep 2\nStep 3')
+        .split('\n')
+        .map((step, index) => (
+          <Text key={index} style={styles.instructionStep}>{step}</Text>
         ))}
 
-        {/* Start Exercise Button */}
-        <TouchableOpacity style={styles.startButton} onPress={handleStartExercise}>
-            <Text style={styles.startButtonText}>Start Exercise</Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.startButton} onPress={handleStartExercise}>
+        <Text style={styles.startButtonText}>Start Exercise</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -76,41 +93,49 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E293B',
     paddingTop: 40,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  headerText: {
+  exerciseTitle: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   videoContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  videoThumbnail: {
+  thumbnailWrapper: {
+    position: 'relative',
     width: '90%',
-    height: 180,
+    height: 200,
+    backgroundColor: '#334155',
     borderRadius: 10,
-    backgroundColor: '#334155', // Placeholder background
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  playButton: {
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+  },
+  playButtonOverlay: {
     position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    top: '40%',
+    left: '45%',
+  },
+  playIcon: {
+    color: '#FFF',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  video: {
+    width: '90%',
+    height: 200,
+    borderRadius: 10,
   },
   description: {
     color: '#CBD5E0',
     fontSize: 16,
-    paddingHorizontal: 20,
-    marginBottom: 25,
     textAlign: 'center',
+    marginVertical: 12,
   },
   instructionsTitle: {
     color: 'white',
@@ -126,7 +151,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   startButton: {
-    backgroundColor: '#7C3AED', // Purple color
+    backgroundColor: '#7C3AED',
     borderRadius: 8,
     paddingVertical: 15,
     marginHorizontal: 20,
@@ -138,19 +163,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 15,
-    backgroundColor: '#2C3E50',
-    borderTopWidth: 1,
-    borderTopColor: '#34495E',
-    marginTop: 'auto', // Push to the bottom
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 

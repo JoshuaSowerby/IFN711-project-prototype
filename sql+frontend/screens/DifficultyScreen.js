@@ -1,49 +1,66 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 export default function WorkoutDifficultyScreen() {
-  const navigation = useNavigation(); // Get the navigation object
+  const navigation = useNavigation();
+
+  const quotes = [
+    "Push yourself, because no one else will do it for you.",
+    "Consistency is more important than intensity.",
+    "Every rep brings you one step closer to your goal.",
+    "Don’t stop until you’re proud.",
+    "Strong mind, strong body.",
+    "You don’t have to be extreme, just consistent.",
+    "Train hard, recover harder.",
+    "Discipline is choosing what you want most over what you want now.",
+  ];
+
+  const [quote, setQuote] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      setQuote(quotes[randomIndex]);
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Start Workout</Text>
-        <Ionicons name="person-outline" size={24} color="white" />
-      </View>
-
-      {/* Choose Your Difficulty */}
-      <Text style={styles.title}>Choose Your Difficulty</Text>
+      {/* Title */}
+      <Text style={styles.headerText}>CHOOSE YOUR DIFFICULTY</Text>
 
       {/* Difficulty Buttons */}
-      <TouchableOpacity
-        style={[styles.button, styles.easyButton]}
-        onPress={() => navigation.navigate('ExerciseList', { difficulty: 'easy' })}
-      >
-        <Text style={styles.buttonText}>Easy</Text>
-        <Text style={styles.subText}>Beginner level</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[styles.button, styles.easyButton]}
+          onPress={() => navigation.navigate('ExerciseList', { difficulty: 'easy' })}
+        >
+          <Text style={styles.buttonText}>Easy</Text>
+          <Text style={styles.subText}>Beginner level</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, styles.mediumButton]}
-        onPress={() => navigation.navigate('ExerciseList', { difficulty: 'medium' })}
-      >
-        <Text style={styles.buttonText}>Medium</Text>
-        <Text style={styles.subText}>Intermediate Level</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.mediumButton]}
+          onPress={() => navigation.navigate('ExerciseList', { difficulty: 'medium' })}
+        >
+          <Text style={styles.buttonText}>Medium</Text>
+          <Text style={styles.subText}>Intermediate Level</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, styles.hardButton]}
-        onPress={() => navigation.navigate('ExerciseList', { difficulty: 'hard' })}
-      >
-        <Text style={styles.buttonText}>Hard</Text>
-        <Text style={styles.subText}>Advanced Level</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.hardButton]}
+          onPress={() => navigation.navigate('ExerciseList', { difficulty: 'hard' })}
+        >
+          <Text style={styles.buttonText}>Hard</Text>
+          <Text style={styles.subText}>Advanced Level</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Motivational Quote */}
+      <View style={styles.quoteContainer}>
+        <Text style={styles.quoteText}>“{quote}”</Text>
+      </View>
     </View>
   );
 }
@@ -51,45 +68,38 @@ export default function WorkoutDifficultyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E293B', // Dark background color
-    paddingTop: 40, // Adjust for status bar
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: '#1E293B',
+    paddingTop: 60,
     paddingHorizontal: 20,
-    marginBottom: 30,
+    justifyContent: 'flex-start',
   },
   headerText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  title: {
-    color: 'white',
-    fontSize: 20,
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 30,
+    letterSpacing: 1.5,
+    marginBottom: 25,
+  },
+  buttonContainer: {
+    marginBottom: 40,
   },
   button: {
     borderRadius: 8,
     paddingVertical: 15,
     paddingHorizontal: 20,
-    marginHorizontal: 20,
     marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   easyButton: {
-    backgroundColor: '#2ECC71', // Green
+    backgroundColor: '#2ECC71',
   },
   mediumButton: {
-    backgroundColor: '#F39C12', // Orange
+    backgroundColor: '#F39C12',
   },
   hardButton: {
-    backgroundColor: '#E74C3C', // Red
+    backgroundColor: '#E74C3C',
   },
   buttonText: {
     color: 'white',
@@ -100,5 +110,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     opacity: 0.8,
+  },
+  quoteContainer: {
+    marginTop: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  quoteText: {
+    color: '#CBD5E1',
+    fontStyle: 'italic',
+    fontSize: 15,
+    textAlign: 'center',
   },
 });

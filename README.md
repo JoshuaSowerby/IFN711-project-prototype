@@ -17,7 +17,7 @@ npx expo start
 ```
 
 To do:
-- Implement propper scoring
+- Implement proper scoring
     - including bonuses for sharing, and low battery motivation
 - settings tab
 - profile tab

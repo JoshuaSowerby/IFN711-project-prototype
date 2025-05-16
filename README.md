@@ -29,3 +29,4 @@ To do:
 - implement guest login
 - seperate user accounts on same device
 - add sounds
+- move commonly used styles into styles/common.js

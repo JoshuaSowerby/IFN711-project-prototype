@@ -46,7 +46,7 @@ export default function App() {
     })();//evoke unamed func
   },[]);
 
-  useDailyDecay(isDBReady);
+  useDailyDecay(isDBReady);//is the isDBReady check working? NO because it is true by default
   
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();

@@ -13,6 +13,7 @@ export const initDB = async ()=>{
     let tablename;
 
 
+    // // these fail due to decay
     // await db.execAsync(`DROP TABLE IF EXISTS profile;`);
     // await db.execAsync(`DROP TABLE IF EXISTS exercises;`);
     // await db.execAsync(`DROP TABLE IF EXISTS exerciseHistory;`);

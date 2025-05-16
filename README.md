@@ -19,6 +19,8 @@ npx expo start
 To do:
 - Implement proper scoring
     - including bonuses for sharing, and low battery motivation
+- you shouldnt be able to move off exercise screen while exercising
+- add auto login if token not expired
 - settings tab
 - profile tab
 - check that the progess screen is updating on view

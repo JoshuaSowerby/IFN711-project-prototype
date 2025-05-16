@@ -37,9 +37,9 @@ const ExerciseDetailsScreen = () => {
 
   const handleStartExercise = () => {
     let score = 0;
-    if (difficulty === 'easy') score = 100;
-    else if (difficulty === 'medium') score = 1000;
-    else if (difficulty === 'hard') score = 10000;
+    if (difficulty === 'easy') score = 5;
+    else if (difficulty === 'medium') score = 10;
+    else if (difficulty === 'hard') score = 20;
 
     insertExerciseHistory(exercise.exerciseName, score);
     navigation.navigate('Exercise', { exercise, score });

@@ -5,6 +5,10 @@ import { insertExerciseHistory } from '../db/exerciseHistory';
 import { getLatestScoreHistory } from '../db/scoreHistory';
 import { Share } from 'react-native';
 
+import { csvData } from '../assets/test-3-slow-stretch-each-arm';
+import Papa from 'papaparse';
+
+
 // sound 
 import { Audio } from 'expo-av';
 import successSoundFile from '../assets/sounds/success_01.mp3';
@@ -47,16 +51,54 @@ const ExerciseScreen = () => {
     }
   };
 
-  // ⏱ Simulate gradual sensor changes
+
+
+  //real data
+
+  const [data,setData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  useEffect( ()=>{
+    const loadData = async () => {
+        const parsed = Papa.parse(csvData.trim(), {
+            header: true,
+            dynamicTyping:true
+        });
+        setData(parsed.data);
+    }
+    loadData();
+  }, []);
   useEffect(() => {
+    if (data.length === 0) return;
     intervalRef.current = setInterval(() => {
-      setLeftSensor((prev) => getSmoothValue(prev, 0, 100));
-      setMiddleSensor((prev) => getSmoothValue(prev, 0, 100));
-      setRightSensor((prev) => getSmoothValue(prev, 0, 100));
-    }, 300); // Faster updates for smoother transitions
+      const sensorData = data[currentIndex];
+      total=sensorData.leftBack+sensorData.middleBack+sensorData.rightBack;
+      l=sensorData.leftBack/total;
+      m=sensorData.middleBack/total;
+      r=sensorData.rightBack/total;
+      setLeftSensor(l*100);
+      setMiddleSensor(m*100);
+      setRightSensor(r*100);
+      setCurrentIndex(prev => prev + 1)
+      if (currentIndex>=data.length-10){
+        setCurrentIndex(0);
+      }
+      
+    }, 100); // Faster updates for smoother transitions
 
     return () => clearInterval(intervalRef.current);
-  }, []);
+  }, [data,currentIndex]);
+
+
+  // // ⏱ Simulate gradual sensor changes
+  // useEffect(() => {
+  //   intervalRef.current = setInterval(() => {
+  //     setLeftSensor((prev) => getSmoothValue(prev, 0, 100));
+  //     setMiddleSensor((prev) => getSmoothValue(prev, 0, 100));
+  //     setRightSensor((prev) => getSmoothValue(prev, 0, 100));
+  //   }, 100); // Faster updates for smoother transitions
+
+  //   return () => clearInterval(intervalRef.current);
+  // }, []);
 
   // 🔁 Monitor posture and provide feedback
   useEffect(() => {

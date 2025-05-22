@@ -36,13 +36,14 @@ const ExerciseDetailsScreen = () => {
   const { video, thumb } = videoMap[difficulty][index];
 
   const handleStartExercise = () => {
+    /*
     let score = 0;
     if (difficulty === 'easy') score = 5;
     else if (difficulty === 'medium') score = 10;
     else if (difficulty === 'hard') score = 20;
-
-    insertExerciseHistory(exercise.exerciseName, score);
-    navigation.navigate('Exercise', { exercise, score });
+    */
+    //insertExerciseHistory(exercise.exerciseName, score);
+    navigation.navigate('Exercise', { exercise});
   };
 
   return (

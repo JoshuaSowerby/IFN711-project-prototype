@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { insertExerciseHistory } from '../db/exerciseHistory';
-import { getLatestScoreHistory } from '../db/scoreHistory';
+import { getLatestScoreHistory, insertScoreHistory } from '../db/scoreHistory';
 import { Share } from 'react-native';
 
 import { csvData } from '../assets/test-3-slow-stretch-each-arm';
@@ -13,6 +13,7 @@ import Papa from 'papaparse';
 import { Audio } from 'expo-av';
 import successSoundFile from '../assets/sounds/success_01.mp3';
 import warningSoundFile from '../assets/sounds/warning.mp3';
+import { PointsChange, ScoreCalc } from '../utils/ScoreCalculation';
 
 // Helper to simulate smooth sensor transitions
 const getSmoothValue = (prev, min, max, maxChange = 5) => {
@@ -28,7 +29,7 @@ const ExerciseScreen = () => {
   const warningCooldown = useRef(false);
   const route = useRoute();
   const navigation = useNavigation();
-  const { exercise, score } = route.params;
+  const { exercise} = route.params;
   const [postureFeedback, setPostureFeedback] = useState(null);
 
   // Sensor states
@@ -58,6 +59,8 @@ const ExerciseScreen = () => {
   //real data
 
   const [data,setData] = useState([]);
+  const [points,setPoints] = useState(0);//useState({score:0,time:0});
+  const [pointCounter,setPointCounter] = useState(1);//useState({score:0,time:0});
   const [currentIndex, setCurrentIndex] = useState(0);
   useEffect( ()=>{
     const loadData = async () => {
@@ -72,16 +75,27 @@ const ExerciseScreen = () => {
   useEffect(() => {
     if (data.length === 0) return;
     intervalRef.current = setInterval(() => {
+      //get current index
       const sensorData = data[currentIndex];
+      //back sensors
       total=sensorData.leftBack+sensorData.middleBack+sensorData.rightBack;
       l=sensorData.leftBack/total;
       m=sensorData.middleBack/total;
       r=sensorData.rightBack/total;
-      setRightArm(sensorData.rightArm);
-      setLeftArm(sensorData.leftArm);
+      
       setLeftSensor(l*100);
       setMiddleSensor(m*100);
       setRightSensor(r*100);
+      //arm sensors
+      setRightArm(sensorData.rightArm);
+      setLeftArm(sensorData.leftArm);
+
+      //score calculation
+      change=PointsChange(sensorData.leftBack,sensorData.middleBack,sensorData.rightBack, sensorData.leftArm, sensorData.rightArm,1,1,1);
+      setPoints((points+change));
+      setPointCounter(pointCounter+1);
+      //ScoreCalc(activeScore)
+      //update index
       setCurrentIndex(prev => prev + 1)
       if (currentIndex>=data.length-10){
         setCurrentIndex(0);
@@ -134,7 +148,7 @@ const ExerciseScreen = () => {
     if (hasFinishedRef.current) return;
     hasFinishedRef.current = true;
     clearInterval(intervalRef.current);
-    await insertExerciseHistory(exercise.exerciseName, score);
+    await insertExerciseHistory(exercise.exerciseName, ScoreCalc(points,pointCounter,exercise.difficulty));
 
     setTimeout(() => {
       Alert.alert(
@@ -151,9 +165,12 @@ const ExerciseScreen = () => {
 
   const handleShare = async () => {
     const latest = await getLatestScoreHistory();
-    const message = `🏋️ I just completed ${exercise.exerciseName} exercise and scored ${score} points on GravityFit!\n🔋 Battery: ${latest?.batteryLevel ?? 'N/A'}%\nCan you beat my workout?`;
+    const message = `🏋️ I just completed ${exercise.exerciseName} exercise and scored ${ScoreCalc(points,pointCounter,exercise.difficulty)} points on GravityFit!\n🔋 Battery: ${latest?.score ?? 'N/A'}%\nCan you beat my workout?`;
     try {
       await Share.share({ message });
+      //multiply score
+      await insertScoreHistory(ScoreCalc(points,pointCounter,exercise.difficulty)*.4);
+      //await  
     } catch (error) {
       console.error('❌ Error sharing:', error.message);
     } finally {
@@ -166,6 +183,7 @@ const ExerciseScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.exerciseName}>🏋️ {exercise.exerciseName}</Text>
+      <Text>{ScoreCalc(points,pointCounter,exercise.difficulty)}</Text>
 
       <View style={styles.sensorColumn}>
         <Text style={styles.sensorLabel}>M</Text>

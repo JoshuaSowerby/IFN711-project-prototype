@@ -12,8 +12,7 @@ export const initDB = async ()=>{
     const db = await dbPromise;
     let tablename;
 
-
-    // // these fail due to decay
+    // uncomment to clear tables on load
     // await db.execAsync(`DROP TABLE IF EXISTS profile;`);
     // await db.execAsync(`DROP TABLE IF EXISTS exercises;`);
     // await db.execAsync(`DROP TABLE IF EXISTS exerciseHistory;`);

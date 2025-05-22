@@ -32,9 +32,11 @@ const ExerciseScreen = () => {
   const [postureFeedback, setPostureFeedback] = useState(null);
 
   // Sensor states
-  const [leftSensor, setLeftSensor] = useState(30);
-  const [middleSensor, setMiddleSensor] = useState(50);
-  const [rightSensor, setRightSensor] = useState(30);
+  const [leftSensor, setLeftSensor] = useState(0);
+  const [middleSensor, setMiddleSensor] = useState(0);
+  const [rightSensor, setRightSensor] = useState(0);
+  const [leftArm, setLeftArm] = useState(0);
+  const [rightArm, setRightArm] = useState(0);
 
   const intervalRef = useRef(null);
   const hasFinishedRef = useRef(false);
@@ -75,6 +77,8 @@ const ExerciseScreen = () => {
       l=sensorData.leftBack/total;
       m=sensorData.middleBack/total;
       r=sensorData.rightBack/total;
+      setRightArm(sensorData.rightArm);
+      setLeftArm(sensorData.leftArm);
       setLeftSensor(l*100);
       setMiddleSensor(m*100);
       setRightSensor(r*100);
@@ -206,14 +210,14 @@ const ExerciseScreen = () => {
       <View style={styles.barsRow}>
         <View style={styles.barContainer}>
           <View style={styles.barBackground}>
-            <View style={[styles.barFill, { height: `${leftSensor}%` }]} />
+            <View style={[styles.barFill, { height: `${leftArm}%` }]} />
             <View style={styles.barThreshold} />
           </View>
           <Text style={styles.barLabel}>Left Stretch</Text>
         </View>
         <View style={styles.barContainer}>
           <View style={styles.barBackground}>
-            <View style={[styles.barFill, { height: `${rightSensor}%` }]} />
+            <View style={[styles.barFill, { height: `${rightArm}%` }]} />
             <View style={styles.barThreshold} />
           </View>
           <Text style={styles.barLabel}>Right Stretch</Text>

@@ -15,7 +15,7 @@ export const insertScoreHistory = async (score, timestamp=new Date().toISOString
     }else{
         lastDecay=lastScore.lastDecay;
     }
-    score=score+lastScore.score;
+    score=Math.max(score+lastScore.score,0);
     try {
         await db.runAsync(`
             INSERT INTO scoreHistory

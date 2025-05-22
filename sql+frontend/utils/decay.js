@@ -1,58 +1,67 @@
 import { useEffect, useRef } from "react";
-import { dbPromise } from "../db/dbPromise";
 import { AppState } from "react-native";
+import { dbPromise } from "../db/dbPromise";
 import { getLatestScoreHistory, insertScoreHistory } from "../db/scoreHistory";
 
+// ✅ Switch this to false in production
+const TEST_MODE = true;
 
+// ✅ Decay interval (ms)
+const oneDay = TEST_MODE ? 60000 : 86400000; // 1 min (testing) or 1 day (production)
 
-// it may make sense to check this when inserting any score instead...
-export const applyDecay = async () =>{
-    const db = await dbPromise;
-    const latestScore = await getLatestScoreHistory();
-    const now = new Date();
-    lastDecay = new Date(latestScore.lastDecay);
+// ✅ Main decay logic
+export const applyDecay = async () => {
+  const db = await dbPromise;
+  const latestScore = await getLatestScoreHistory();
+  const now = new Date();
+
+  // Fallback to now if no decay recorded
+  let lastDecay = latestScore?.lastDecay ? new Date(latestScore.lastDecay) : new Date();
+
+  // ✅ Remove time for daily mode, keep exact for test mode
+  if (!TEST_MODE) {
     lastDecay = new Date(lastDecay.getFullYear(), lastDecay.getMonth(), lastDecay.getDate());
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    //const today = new Date()//to test this, comment out rounding to nearest day and use bsolute date then change the oneDay
-    const oneDay = 86400000;
-    numOfDecays=0;
-    difference = today - lastDecay
-    console.log(`decay: difference ${difference} >= oneDay ${oneDay}, ${difference >=oneDay}`)
-    if (difference >=oneDay){
-        //while the difference between dates is greater than or equal to one day, subtract one day from difference and add 1 to numOfDecays
-        while (difference >=oneDay){
-            numOfDecays++;
-            difference-=oneDay;
-        };
+  }
+  const today = TEST_MODE ? now : new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-        console.log('ADD PROPER DECAY FUNC HERE')
-        console.log(`${-1*numOfDecays}`)
-        decayAmount=-1*numOfDecays
-        //insert decayed score
-        await insertScoreHistory(decayAmount, undefined , true);
-    };
+  let difference = today - lastDecay;
+  let numOfDecays = 0;
+
+  console.log(`🧮 decay difference: ${difference}ms vs interval ${oneDay}ms`);
+
+  if (difference >= oneDay) {
+    while (difference >= oneDay) {
+      numOfDecays++;
+      difference -= oneDay;
+    }
+
+    const decayAmount = -1 * numOfDecays;
+    console.log(`⚠️ Applying decay: ${decayAmount}`);
+
+    // ⬇️ Insert decayed score (negative value)
+    await insertScoreHistory(decayAmount, undefined, true);
+  }
 };
 
-//have to name use so it uses hook rules
-export const useDailyDecay = (isDbReady) =>{
-    
-    const appState = useRef(AppState.currentState);
-    useEffect(()=>{
-        if(!isDbReady){return};
-        applyDecay();//run on load
+// ✅ Hook to apply decay when app resumes or loads
+export const useDailyDecay = (isDbReady) => {
+  const appState = useRef(AppState.currentState);
 
-        /*if AppState event listener sees change, compare that state(nextAppState) to
-         *appState, if it was cahgning from inactive/background to active, run applyDecay()
-         */
-        const subscription = AppState.addEventListener('change', nextAppState =>{
-            if (
-                appState.current.match(/inactive|background/) &&
-                nextAppState === 'active'
-            ){
-                applyDecay();
-            };
-            appState.current=nextAppState;
-        });
-        return () => {subscription.remove()};
-    }, [isDbReady]);
+  useEffect(() => {
+    if (!isDbReady) return;
+
+    applyDecay(); // 🟢 Run once on mount
+
+    const subscription = AppState.addEventListener("change", nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        applyDecay(); // 🔁 Recheck on resume
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => subscription.remove();
+  }, [isDbReady]);
 };

@@ -27,7 +27,7 @@ import { isTokenExpired } from './utils/jwt';
 
 
 export default function App() {
-  const [isDBReady, setIsDBReady]= useState(true);
+  const [isDBReady, setIsDBReady]= useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);//replace with auth check
 
 

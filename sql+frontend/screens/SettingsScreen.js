@@ -17,15 +17,7 @@ const SettingsScreen = ({ onLogout }) => {
     Alert.alert('Battery Reset', 'Battery level has been reset to 100%');
   };
 
-  const handleLogout = async () => {
-    await SecureStore.deleteItemAsync('JWT');
-    await SecureStore.deleteItemAsync('username');
-    await SecureStore.deleteItemAsync('email');
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
-  };
+  
 
   return (
     <View style={styles.container}>

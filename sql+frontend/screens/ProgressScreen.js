@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { LineChart, StackedBarChart } from 'react-native-chart-kit';
 import { Ionicons } from '@expo/vector-icons';
 import { getScoreHistory } from '../db/scoreHistory';
+import { FormatScore } from '../utils/FormatScore';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -125,7 +126,7 @@ const ProgressScreen = () => {
       <View style={styles.summaryBox}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Best Score</Text>
-          <Text style={styles.summaryValue}>{summary.bestScore}</Text>
+          <Text style={styles.summaryValue}>{FormatScore(summary.bestScore)}</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Avg Form Rating</Text>

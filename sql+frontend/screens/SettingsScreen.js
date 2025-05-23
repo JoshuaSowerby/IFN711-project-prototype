@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from '@react-navigation/native';
 import { insertScoreHistory } from '../db/scoreHistory';
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ onLogout }) => {
   const navigation = useNavigation();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
@@ -20,6 +20,7 @@ const SettingsScreen = () => {
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync('JWT');
     await SecureStore.deleteItemAsync('username');
+    await SecureStore.deleteItemAsync('email');
     navigation.reset({
       index: 0,
       routes: [{ name: 'Login' }],
@@ -47,7 +48,7 @@ const SettingsScreen = () => {
       </TouchableOpacity>
 
       {/* Logout */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#E74C3C' }]} onPress={handleLogout}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#E74C3C' }]} onPress={onLogout}>
         <Text style={styles.buttonText}>Log Out</Text>
       </TouchableOpacity>
     </View>

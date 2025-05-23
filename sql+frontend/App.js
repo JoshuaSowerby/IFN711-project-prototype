@@ -18,7 +18,7 @@ import ProfileScreen  from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import LeaderboardScreen from './screens/LeaderboardScreen';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { initDB } from './db/initDB';
 
@@ -29,14 +29,19 @@ import { isTokenExpired } from './utils/jwt';
 export default function App() {
   const [isDBReady, setIsDBReady]= useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);//replace with auth check
-
+  
+  const handleLogout = async () => {
+    setIsAuthenticated(false);
+    await SecureStore.deleteItemAsync('JWT');
+    await SecureStore.deleteItemAsync('username');
+    await SecureStore.deleteItemAsync('email');
+  };
 
   useEffect(()=>{
     (async () =>{
       try {
         //check token, shouldnt init if expired...
         // const expired=await isTokenExpired();
-        console.log(111);
         //init db
         await initDB();
         setIsDBReady(true);
@@ -105,7 +110,9 @@ export default function App() {
                   tabBarIcon: ({ color, size }) => (
                     <Ionicons name="person-outline" size={size} color={color} />
                           ),}}/>          
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Settings">
+          {(props) => <SettingsScreen {...props} onLogout={handleLogout} />}
+        </Tab.Screen>
         </Tab.Navigator>
       ) : (
         <AuthStack />

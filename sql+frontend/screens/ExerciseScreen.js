@@ -14,6 +14,7 @@ import { Audio } from 'expo-av';
 import successSoundFile from '../assets/sounds/success_01.mp3';
 import warningSoundFile from '../assets/sounds/warning.mp3';
 import { PointsChange, ScoreCalc } from '../utils/ScoreCalculation';
+import { FormatScore } from '../utils/FormatScore';
 
 // Helper to simulate smooth sensor transitions
 const getSmoothValue = (prev, min, max, maxChange = 5) => {
@@ -165,7 +166,7 @@ const ExerciseScreen = () => {
 
   const handleShare = async () => {
     const latest = await getLatestScoreHistory();
-    const message = `🏋️ I just completed ${exercise.exerciseName} exercise and scored ${ScoreCalc(points,pointCounter,exercise.difficulty)} points on GravityFit!\n🔋 Battery: ${latest?.score ?? 'N/A'}%\nCan you beat my workout?`;
+    const message = `🏋️ I just completed ${exercise.exerciseName} exercise and scored ${FormatScore(ScoreCalc(points,pointCounter,exercise.difficulty))} points on GravityFit!\n🔋 Battery: ${latest?.score ?? 'N/A'}%\nCan you beat my workout?`;
     try {
       await Share.share({ message });
       //multiply score
@@ -183,7 +184,7 @@ const ExerciseScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.exerciseName}>🏋️ {exercise.exerciseName}</Text>
-      <Text>{ScoreCalc(points,pointCounter,exercise.difficulty)}</Text>
+      <Text style={styles.exerciseName}>{FormatScore(ScoreCalc(points,pointCounter,exercise.difficulty))}</Text>
 
       <View style={styles.sensorColumn}>
         <Text style={styles.sensorLabel}>M</Text>

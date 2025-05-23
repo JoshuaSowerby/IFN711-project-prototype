@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 // Import the GravityFit logo
 import Logo from '../assets/GravityFit_Logo.png';
+import { FormatScore } from '../utils/FormatScore';
 
 const HomeScreen = ({ navigation }) => {
   const [userScore, setUserScore] = useState(0);
@@ -82,7 +83,7 @@ const HomeScreen = ({ navigation }) => {
               lineCap="round"
             >
               {() => (
-                <Text style={styles.gaugeText}>{`${userScore}%`}</Text>
+                <Text style={styles.gaugeText}>{`${FormatScore(userScore)}%`}</Text>
               )}
             </AnimatedCircularProgress>
           </View>

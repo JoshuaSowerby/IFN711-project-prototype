@@ -19,7 +19,7 @@ npx expo start
 To do:
 - **Scoring:**
     - ~~Actual score calculated from perfomance~~
-        - round score
+        - ~~round score~~
         - make more intuitive
     - Bonuses
         - ~~Sharing~~ (please say that this will happen)

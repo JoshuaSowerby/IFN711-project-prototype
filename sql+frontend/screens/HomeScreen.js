@@ -123,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
         ) : (
           leaderboard.map((user, index) => (
             <Text key={index} style={styles.leaderboardItem}>
-              {getMedal(index)} {(typeof user.username === 'string' ? user.username : JSON.stringify(user.username))} - {user.score}
+              {getMedal(index)} {(typeof user.username === 'string' ? user.username : JSON.stringify(user.username))} - {FormatScore(user.score)}
             </Text>
           ))
         )}

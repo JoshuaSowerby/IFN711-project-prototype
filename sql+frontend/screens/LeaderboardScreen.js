@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getLeaderboard } from '../api/leaderboard';
+import { FormatScore } from '../utils/FormatScore';
 
 const LeaderboardScreen = () => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -48,7 +49,7 @@ const LeaderboardScreen = () => {
         <Ionicons name="person-circle" size={32} color="#94a3b8" />
         <View style={styles.userInfo}>
           <Text style={styles.username}>{name}</Text>
-          <Text style={styles.score}>Score: {item.score}</Text>
+          <Text style={styles.score}>Score: {FormatScore(item.score)}</Text>
         </View>
         <Text style={styles.medal}>{getMedal(index)}</Text>
       </View>

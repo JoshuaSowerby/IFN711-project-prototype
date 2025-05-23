@@ -13,6 +13,7 @@ import * as SecureStore from 'expo-secure-store';
 import { getScoreHistory, getLatestScoreHistory } from '../db/scoreHistory';
 import { Ionicons } from '@expo/vector-icons';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { FormatScore } from '../utils/FormatScore';
 
 const ProfileScreen = ({ navigation }) => {
   const [username, setUsername] = useState('Username');
@@ -83,7 +84,7 @@ const ProfileScreen = ({ navigation }) => {
       <Text style={styles.username}>{username}</Text>
 
       {/* Score Summary */}
-      <Text style={styles.score}>GravityFit Score : {score}</Text>
+      <Text style={styles.score}>GravityFit Score : {FormatScore(score)}</Text>
       <Text style={styles.summaryTitle}>Summary</Text>
       <Text style={styles.summary}>Best Score: {bestScore}</Text>
       <Text style={styles.summary}>Streak: {streak} days</Text>

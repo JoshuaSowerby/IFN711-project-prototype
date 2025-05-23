@@ -27,17 +27,25 @@ const HomeScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      getLatestScoreHistory().then((result) => {
-        if (result !== null) {
-          setUserScore(result.score);
+      const loadData = async () =>{
+        try {
+          const result = await getLatestScoreHistory();
+          if (result !== null){
+            setUserScore(result.score);
+          }
+        } catch (error) {
+          console.log("Error getting latest score",error)
+        }finally {
           setLoading(false);
         }
-      });
-
-      getLeaderboard().then((data) => {
-        const top3 = data.slice(0, 3);
-        setLeaderboard(top3);
-      });
+        try {
+          const data = await getLeaderboard();
+          setLeaderboard(data.slice(0, 3));
+        } catch (error) {
+          console.error('Error getting leaderboard:', err);
+        }
+      };
+      loadData();
     }, [])
   );
 

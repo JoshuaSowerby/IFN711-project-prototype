@@ -49,9 +49,9 @@ export const ScoreCalc =(points, time, difficulty)=>{
             difficultyModifier=1;
             break;
         case "medium":
-            difficulty=2;
+            difficultyModifier=2;
         case "hard":
-            difficulty=4;
+            difficultyModifier=4;
     }
     const maxSinglePoint=5;
     formQuality = points/time/maxSinglePoint;

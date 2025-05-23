@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { ProfileReady } from '../db/initProfile';
 
 const api="http://192.168.0.108:3000/api/";
 
@@ -24,6 +25,7 @@ export const register = async (email, username, password) =>{
             //store token
             await SecureStore.setItemAsync('JWT', String(data.token));
             await SecureStore.setItemAsync('username', String(data.username));
+            await ProfileReady();
             return true;
         };
         
@@ -55,6 +57,9 @@ export const login = async (email, password) =>{
             //store token
             await SecureStore.setItemAsync('JWT', String(data.token));
             await SecureStore.setItemAsync('username', String(data.username));
+            await SecureStore.setItemAsync('email', email);
+            //init user
+            await ProfileReady();
             return true;
         };
     } catch (error) {

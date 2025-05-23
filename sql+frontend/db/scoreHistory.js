@@ -1,6 +1,8 @@
 // import { postLeaderboard } from "../api/postLeaderboard";
 import { postLeaderboard } from "../api/leaderboard";
 import { dbPromise } from "./dbPromise";
+import * as SecureStore from 'expo-secure-store';
+
 
 export const insertScoreHistory = async (score, timestamp=new Date().toISOString(), isDecay=false)=>{
     const db = await dbPromise;
@@ -17,11 +19,12 @@ export const insertScoreHistory = async (score, timestamp=new Date().toISOString
     }
     score=Math.max(score+lastScore.score,0);
     try {
+        const email = await SecureStore.getItemAsync('email');
         await db.runAsync(`
             INSERT INTO scoreHistory
-            (score, lastDecay, timestamp)
-            VALUES (?, ?, ?);`,
-            [score, lastDecay, timestamp]);
+            (user_id, score, lastDecay, timestamp)
+            VALUES (?, ?, ?, ?);`,
+            [email, score, lastDecay, timestamp]);
         console.log('scoreHistory insert success');
         //if logged in or if token exists and is not expired
         await postLeaderboard(score, timestamp);//this may not need to be await
@@ -33,8 +36,9 @@ export const insertScoreHistory = async (score, timestamp=new Date().toISOString
 export const getScoreHistory= async ()=>{
     const db = await dbPromise;
     try {
+        const email = await SecureStore.getItemAsync('email');
         const res = await db.getAllAsync(`
-            SELECT * FROM scoreHistory;`);
+            SELECT * FROM scoreHistory WHERE user_id=?;`,[email]);
         return res;
     } catch (error) {
         console.error(error);
@@ -45,11 +49,13 @@ export const getLatestScoreHistory= async ()=>{
     const db = await dbPromise;
 
     try {
+        const email = await SecureStore.getItemAsync('email');
         const latestScore = await db.getFirstAsync(`
             SELECT *
             FROM scoreHistory
+            WHERE user_id=?
             ORDER BY timestamp DESC
-            LIMIT 1;`);
+            LIMIT 1;`,[email]);
         return latestScore;
     } catch (error) {
         console.error(error);

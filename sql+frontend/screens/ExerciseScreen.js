@@ -120,6 +120,8 @@ const ExerciseScreen = () => {
   // }, []);
 
   // 🔁 Monitor posture and provide feedback
+  //These values shoud be gotten from the exercise table. CUrrently not implemented
+  //Also should do this with the rest of the sensor values and score
   useEffect(() => {
     const isGoodPosture = middleSensor > 50 && leftSensor > 30 && rightSensor > 30;
     const isAveragePosture = middleSensor > 25 && leftSensor > 15 && rightSensor > 15;
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1E293B',
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: 30,
   },
   exerciseName: {
     color: '#fff',
@@ -301,7 +303,7 @@ const styles = StyleSheet.create({
   sideCirclesRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: -10,
   },
   barsRow: {
     flexDirection: 'row',
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 8,
-    marginTop: 40,
+    marginTop: 30,
   },
   stopButtonText: {
     color: '#fff',

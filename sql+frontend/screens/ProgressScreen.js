@@ -19,7 +19,11 @@ const ProgressScreen = () => {
     const fetchData = async () => {
       try {
         const history = await getScoreHistory();
-        if (!history || history.length === 0) return;
+        if (!history || history.length === 0) {
+          setWeeklyData(null);  // Set to null explicitly to trigger fallback UI
+          setSummary({ bestScore: 0, avgFormRating: 'N/A', totalMinutes: 0 });
+          return;
+        }
 
         const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         const frequency = Array(7).fill(0);
@@ -49,11 +53,16 @@ const ProgressScreen = () => {
       }
     };
 
+
     fetchData();
   }, []);
-
+  
   const safeData =
-    weeklyData?.frequency?.length === 7 && weeklyData?.postureData?.length === 7;
+  weeklyData &&
+  Array.isArray(weeklyData.frequency) &&
+  Array.isArray(weeklyData.postureData) &&
+  weeklyData.frequency.some(val => val > 0) &&
+  weeklyData.postureData.some(val => val > 0);
 
   return (
     <ScrollView style={styles.container}>

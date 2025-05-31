@@ -44,11 +44,11 @@ export const applyDecay = async () => {
 };
 
 // ✅ Hook to apply decay when app resumes or loads
-export const useDailyDecay = (isDbReady) => {
+export const useDailyDecay = (isDbReady, isAuthenticated) => {
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
-    if (!isDbReady) return;
+    if (!isDbReady || !isAuthenticated) return;
 
     applyDecay(); // 🟢 Run once on mount
 
@@ -63,5 +63,5 @@ export const useDailyDecay = (isDbReady) => {
     });
 
     return () => subscription.remove();
-  }, [isDbReady]);
+  }, [isDbReady, isAuthenticated]);
 };

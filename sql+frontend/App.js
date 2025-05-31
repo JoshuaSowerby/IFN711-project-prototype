@@ -39,19 +39,21 @@ export default function App() {
 
   useEffect(()=>{
     (async () =>{
+      console.log("Effect: About to init DB...");
       try {
         //check token, shouldnt init if expired...
         // const expired=await isTokenExpired();
         //init db
         await initDB();
+        console.log("Effect: DB is ready, calling setIsDBReady(true)");
         setIsDBReady(true);
       } catch (error) {
-        console.error(error);
+        console.error("Effect: Error in DB init:",error);
       }
     })();//evoke unamed func
   },[]);
 
-  useDailyDecay(isDBReady);//is the isDBReady check working? NO because it is true by default
+  useDailyDecay(isDBReady, isAuthenticated);//is the isDBReady check working? NO because it is true by default
   
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();

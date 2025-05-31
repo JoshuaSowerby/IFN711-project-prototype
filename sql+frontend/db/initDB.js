@@ -61,7 +61,7 @@ export const initDB = async ()=>{
         FOREIGN KEY (user_id) REFERENCES profile(id) ON DELETE CASCADE
         );
     `);
-    var count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
-    if (count.count ===0){ await insertScoreHistory(0)};
+    // var count = await db.getFirstAsync(`SELECT COUNT(*) as count FROM ${tablename};`);
+    // if (count.count ===0){ await insertScoreHistory(0)};
     
 }
